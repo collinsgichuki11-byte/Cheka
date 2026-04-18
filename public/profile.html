@@ -91,6 +91,28 @@
     document.getElementById('profileEmail').textContent=user.email;
     document.getElementById('avatar').textContent=user.username?user.username[0].toUpperCase():'?';
 
+    async function deleteVideo(id){
+      if(!confirm('Delete this video?'))return;
+      try{
+        const res=await fetch(API+'/api/videos/'+id,{
+          method:'DELETE',
+          headers:{'Authorization':'Bearer '+token}
+        });
+        if(res.ok){
+          document.getElementById('vc-'+id).remove();
+          showToast('Video deleted');
+          loadMyVideos();
+        }
+      }catch{showToast('Could not delete video');}
+    }
+
+    function showToast(msg){
+      let t=document.getElementById('toast');
+      if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1db954;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-size:.85rem;font-weight:700;z-index:9999;';document.body.appendChild(t);}
+      t.textContent=msg;t.style.display='block';
+      setTimeout(()=>t.style.display='none',2500);
+    }
+
     async function loadMyVideos(){
       try{
         const res=await fetch(API+'/api/videos');
@@ -123,7 +145,7 @@
         }
 
         grid.innerHTML=mine.map(v=>`
-          <div class="video-card">
+          <div class="video-card" id="vc-${v._id}">
             <div class="video-thumb">
               <iframe src="https://www.youtube.com/embed/${v.youtubeId}" allowfullscreen loading="lazy"></iframe>
             </div>
@@ -133,6 +155,7 @@
                 <span class="date">${new Date(v.createdAt).toLocaleDateString()}</span>
                 <span class="likes">❤️ ${v.likes}</span>
               </div>
+              <button onclick="deleteVideo('${v._id}')" style="margin-top:.75rem;width:100%;background:transparent;border:1px solid #e63212;color:#e63212;border-radius:8px;padding:.5rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer;">🗑 Delete Video</button>
             </div>
           </div>
         `).join('');
