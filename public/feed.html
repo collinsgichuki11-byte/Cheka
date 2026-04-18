@@ -8,13 +8,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
   <style>
     .feed-container{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
-    .feed-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
+    .feed-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
     .feed-header h1{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:900}
-    .search-bar{margin-bottom:2rem}
+    .search-bar{margin-bottom:1.5rem}
     .search-bar input{width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:.75rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;box-sizing:border-box}
+    .search-bar input:focus{border-color:#e63212}
     .submit-btn{background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.7rem 1.2rem;font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap}
+    .categories{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.75rem;margin-bottom:1.5rem;scrollbar-width:none}
+    .categories::-webkit-scrollbar{display:none}
+    .cat-btn{background:transparent;border:1px solid #2a2a2a;color:#888;border-radius:20px;padding:.4rem 1rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer;white-space:nowrap;touch-action:manipulation}
+    .cat-btn.active{background:#e63212;border-color:#e63212;color:#f5f5f5}
+    .tabs{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:1px solid #2a2a2a}
+    .tab-btn{background:transparent;border:none;color:#888;padding:.75rem 1.5rem;font-family:'Space Mono',monospace;font-size:.85rem;cursor:pointer;border-bottom:2px solid transparent;touch-action:manipulation}
+    .tab-btn.active{color:#f5f5f5;border-bottom-color:#e63212}
     .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
     .video-card{background:#111;border:1px solid #2a2a2a;border-radius:12px;overflow:hidden}
+    .video-card:hover{border-color:#e63212}
     .video-thumb{position:relative;padding-bottom:56.25%;height:0;overflow:hidden}
     .video-thumb iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
     .video-details{padding:1rem}
@@ -22,13 +31,16 @@
     .video-actions{display:flex;justify-content:space-between;align-items:center;margin-top:.75rem}
     .creator-tag{color:#1db954;font-size:.75rem}
     .action-btns{display:flex;gap:.5rem}
-    .act-btn{background:transparent;border:1px solid #2a2a2a;color:#f5f5f5;border-radius:20px;padding:.4rem .9rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
+    .act-btn{background:transparent;border:1px solid #2a2a2a;color:#f5f5f5;border-radius:20px;padding:.4rem .9rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
     .act-btn.liked{border-color:#e63212;color:#e63212}
+    .video-footer{display:flex;justify-content:space-between;margin-top:.5rem}
+    .views{color:#555;font-size:.75rem}
+    .category-tag{background:#1a1a1a;border:1px solid #2a2a2a;color:#888;border-radius:10px;padding:.15rem .6rem;font-size:.7rem}
+    .trending-badge{background:#e63212;color:#f5f5f5;border-radius:10px;padding:.15rem .6rem;font-size:.7rem;font-weight:700}
     .loading{text-align:center;padding:4rem;color:#888;font-size:.85rem;grid-column:1/-1}
     .empty-state{text-align:center;padding:4rem 2rem;color:#888;grid-column:1/-1}
     .empty-state h2{font-family:'Syne',sans-serif;font-size:1.5rem;color:#f5f5f5}
     .back-btn{display:inline-block;color:#888;text-decoration:none;font-size:.85rem;margin-bottom:1.5rem}
-    /* Comments Modal */
     .cm-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);z-index:2000;display:none;flex-direction:column}
     .cm-overlay.open{display:flex}
     .cm-header{display:flex;justify-content:space-between;align-items:center;padding:1.5rem;border-bottom:1px solid #2a2a2a;flex-shrink:0}
@@ -46,15 +58,15 @@
     .comment-text{font-size:.9rem;color:#f5f5f5;line-height:1.5}
     .comment-time{font-size:.7rem;color:#555;margin-top:.3rem}
     .no-comments{color:#555;font-size:.85rem;text-align:center;padding:2rem}
-    /* Submit Modal */
     .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:1000;padding:1.5rem;box-sizing:border-box}
     .modal-overlay.active{display:flex}
     .modal{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:2rem;width:100%;max-width:460px}
     .modal h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:1.5rem}
     .form-group{margin-bottom:1.2rem}
     .form-group label{display:block;font-size:.8rem;color:#888;margin-bottom:.4rem}
-    .form-group input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.85rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;box-sizing:border-box}
-    .form-group input:focus{border-color:#e63212}
+    .form-group input,.form-group select{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.85rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;box-sizing:border-box}
+    .form-group select option{background:#1a1a1a}
+    .form-group input:focus,.form-group select:focus{border-color:#e63212}
     .modal-btns{display:flex;gap:1rem;margin-top:1rem}
     .modal-submit{flex:1;background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.85rem;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer}
     .modal-cancel{background:transparent;color:#888;border:1px solid #2a2a2a;border-radius:8px;padding:.85rem 1.2rem;font-family:'Space Mono',monospace;cursor:pointer}
@@ -79,15 +91,30 @@
       <h1>😂 What's Funny Today</h1>
       <button class="submit-btn" onclick="openModal()">+ Submit</button>
     </div>
+
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search funny videos..." oninput="filterVideos()"/>
     </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-all" onclick="switchTab('all')">🔥 All</button>
+      <button class="tab-btn" id="tab-trending" onclick="switchTab('trending')">📈 Trending</button>
+    </div>
+
+    <div class="categories">
+      <button class="cat-btn active" onclick="filterCategory('',this)">All</button>
+      <button class="cat-btn" onclick="filterCategory('Comedy',this)">😂 Comedy</button>
+      <button class="cat-btn" onclick="filterCategory('Skits',this)">🎭 Skits</button>
+      <button class="cat-btn" onclick="filterCategory('Memes',this)">🤣 Memes</button>
+      <button class="cat-btn" onclick="filterCategory('Roasts',this)">🔥 Roasts</button>
+      <button class="cat-btn" onclick="filterCategory('Standup',this)">🎤 Standup</button>
+    </div>
+
     <div id="videoGrid" class="video-grid">
       <div class="loading">Loading funny content... 😂</div>
     </div>
   </div>
 
-  <!-- Comments Modal (outside all cards) -->
   <div class="cm-overlay" id="cmOverlay">
     <div class="cm-header">
       <h2>💬 Comments</h2>
@@ -104,7 +131,6 @@
     </div>
   </div>
 
-  <!-- Submit Modal -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <h2>Submit a Video 🎬</h2>
@@ -116,6 +142,17 @@
       <div class="form-group">
         <label>YouTube URL</label>
         <input type="text" id="videoUrl" placeholder="https://youtube.com/watch?v=..."/>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="videoCategory">
+          <option value="General">General</option>
+          <option value="Comedy">😂 Comedy</option>
+          <option value="Skits">🎭 Skits</option>
+          <option value="Memes">🤣 Memes</option>
+          <option value="Roasts">🔥 Roasts</option>
+          <option value="Standup">🎤 Standup</option>
+        </select>
       </div>
       <div class="modal-btns">
         <button class="modal-cancel" onclick="closeModal()">Cancel</button>
@@ -132,12 +169,13 @@
     const user=JSON.parse(localStorage.getItem('cheka_user')||'{}');
     let allVideos=[];
     let activeVideoId=null;
+    let currentTab='all';
+    let currentCategory='';
     const likedVideos=new Set(JSON.parse(localStorage.getItem('cheka_liked')||'[]'));
 
     if(!token)window.location.href='login.html';
     document.getElementById('navUser').textContent=user.username?'@'+user.username:'';
 
-    // Wire up comment send button ONCE here outside any card
     document.getElementById('cmSend').addEventListener('click',sendComment);
     document.getElementById('cmInput').addEventListener('keydown',function(e){
       if(e.key==='Enter')sendComment();
@@ -159,7 +197,10 @@
 
     async function loadVideos(){
       try{
-        const res=await fetch(API+'/api/videos');
+        const url=currentTab==='trending'
+          ? API+'/api/videos/trending'
+          : API+'/api/videos'+(currentCategory?'?category='+currentCategory:'');
+        const res=await fetch(url);
         allVideos=await res.json();
         renderVideos(allVideos);
       }catch{
@@ -170,10 +211,10 @@
     function renderVideos(videos){
       const grid=document.getElementById('videoGrid');
       if(!videos.length){
-        grid.innerHTML='<div class="empty-state"><h2>No videos yet 😅</h2><p>Be the first!</p></div>';
+        grid.innerHTML='<div class="empty-state"><h2>No videos yet 😅</h2><p>Be the first to submit!</p></div>';
         return;
       }
-      grid.innerHTML=videos.map(v=>`
+      grid.innerHTML=videos.map((v,i)=>`
         <div class="video-card">
           <div class="video-thumb">
             <iframe src="https://www.youtube.com/embed/${v.youtubeId}" allowfullscreen loading="lazy"></iframe>
@@ -188,6 +229,10 @@
                 <button class="act-btn" onclick="shareVideo('${v._id}','${v.title}')">🔗</button>
               </div>
             </div>
+            <div class="video-footer">
+              <span class="views">👁 ${v.views||0}</span>
+              <span class="${currentTab==='trending'&&i<3?'trending-badge':'category-tag'}">${currentTab==='trending'&&i<3?'🔥 Trending':v.category||'General'}</span>
+            </div>
           </div>
         </div>
       `).join('');
@@ -196,6 +241,26 @@
     function filterVideos(){
       const q=document.getElementById('searchInput').value.toLowerCase();
       renderVideos(allVideos.filter(v=>v.title.toLowerCase().includes(q)||v.creatorName.toLowerCase().includes(q)));
+    }
+
+    function switchTab(tab){
+      currentTab=tab;
+      currentCategory='';
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('tab-'+tab).classList.add('active');
+      document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelector('.cat-btn').classList.add('active');
+      loadVideos();
+    }
+
+    function filterCategory(cat,btn){
+      currentCategory=cat;
+      currentTab='all';
+      document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.getElementById('tab-all').classList.add('active');
+      loadVideos();
     }
 
     async function likeVideo(id){
@@ -226,6 +291,8 @@
       document.getElementById('cmInput').value='';
       document.getElementById('cmList').innerHTML='<div class="no-comments">Loading...</div>';
       await loadComments(videoId);
+      // Track view
+      fetch(API+'/api/videos/'+videoId+'/view',{method:'POST'}).catch(()=>{});
     }
 
     function closeComments(){
@@ -238,10 +305,7 @@
         const res=await fetch(API+'/api/comments/'+videoId);
         const comments=await res.json();
         const list=document.getElementById('cmList');
-        if(!comments.length){
-          list.innerHTML='<div class="no-comments">No comments yet. Be first! 😄</div>';
-          return;
-        }
+        if(!comments.length){list.innerHTML='<div class="no-comments">No comments yet. Be first! 😄</div>';return;}
         list.innerHTML=comments.map(c=>`
           <div class="comment-item">
             <div class="comment-author">@${c.username}</div>
@@ -263,11 +327,7 @@
           headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
           body:JSON.stringify({text,username:user.username})
         });
-        if(res.ok){
-          input.value='';
-          await loadComments(activeVideoId);
-          showToast('Comment posted! 😄');
-        }
+        if(res.ok){input.value='';await loadComments(activeVideoId);showToast('Comment posted! 😄');}
       }catch{showToast('Could not post comment');}
     }
 
@@ -286,6 +346,7 @@
     async function submitVideo(){
       const title=document.getElementById('videoTitle').value.trim();
       const youtubeUrl=document.getElementById('videoUrl').value.trim();
+      const category=document.getElementById('videoCategory').value;
       const errorMsg=document.getElementById('modalError');
       errorMsg.style.display='none';
       if(!title||!youtubeUrl){errorMsg.textContent='Please fill in all fields';errorMsg.style.display='block';return;}
@@ -293,7 +354,7 @@
         const res=await fetch(API+'/api/videos',{
           method:'POST',
           headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-          body:JSON.stringify({title,youtubeUrl,creatorName:user.username})
+          body:JSON.stringify({title,youtubeUrl,creatorName:user.username,category})
         });
         const data=await res.json();
         if(!res.ok){errorMsg.textContent=data.msg||'Something went wrong';errorMsg.style.display='block';return;}
