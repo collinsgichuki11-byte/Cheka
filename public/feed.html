@@ -10,10 +10,10 @@
     .feed-container{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
     .feed-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
     .feed-header h1{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:900}
-    .search-bar{display:flex;gap:.5rem;margin-bottom:2rem}
-    .search-bar input{flex:1;background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:.75rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none}
+    .search-bar{margin-bottom:2rem}
+    .search-bar input{width:100%;background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:.75rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;box-sizing:border-box}
     .search-bar input:focus{border-color:#e63212}
-    .submit-btn{background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.7rem 1.2rem;font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer}
+    .submit-btn{background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.7rem 1.2rem;font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap}
     .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
     .video-card{background:#111;border:1px solid #2a2a2a;border-radius:12px;overflow:hidden}
     .video-thumb{position:relative;padding-bottom:56.25%;height:0;overflow:hidden}
@@ -24,27 +24,23 @@
     .creator-tag{color:#1db954;font-size:.75rem}
     .action-btns{display:flex;gap:.5rem}
     .like-btn,.comment-btn,.share-btn{background:transparent;border:1px solid #2a2a2a;color:#f5f5f5;border-radius:20px;padding:.3rem .8rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer}
-    .like-btn:hover{border-color:#e63212;color:#e63212}
-    .comment-btn:hover{border-color:#1db954;color:#1db954}
     .comments-section{padding:1rem;border-top:1px solid #1f1f1f;display:none}
     .comments-section.open{display:block}
     .comment-input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.7rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;margin-bottom:.5rem;box-sizing:border-box}
-    .comment-input:focus{border-color:#e63212}
-    .send-comment-btn{width:100%;background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.8rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;cursor:pointer;display:block;margin-bottom:1rem;-webkit-appearance:none}
+    .send-comment-btn{width:100%;background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.8rem;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;cursor:pointer;display:block;margin-bottom:1rem;box-sizing:border-box;-webkit-appearance:none;touch-action:manipulation}
     .comment-item{margin-bottom:.75rem;padding-bottom:.75rem;border-bottom:1px solid #1f1f1f}
     .comment-item:last-child{border-bottom:none}
     .comment-author{color:#1db954;font-size:.75rem;margin-bottom:.2rem}
     .comment-text{font-size:.85rem;color:#f5f5f5}
     .comment-time{font-size:.7rem;color:#555;margin-top:.2rem}
     .no-comments{color:#555;font-size:.8rem;text-align:center;padding:1rem}
-    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:1000;padding:1.5rem}
+    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:1000;padding:1.5rem;box-sizing:border-box}
     .modal-overlay.active{display:flex}
     .modal{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:2rem;width:100%;max-width:460px}
     .modal h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;margin-bottom:1.5rem}
     .form-group{margin-bottom:1.2rem}
     .form-group label{display:block;font-size:.8rem;color:#888;margin-bottom:.4rem}
     .form-group input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.85rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;box-sizing:border-box}
-    .form-group input:focus{border-color:#e63212}
     .modal-btns{display:flex;gap:1rem;margin-top:1rem}
     .modal-submit{flex:1;background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.85rem;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer}
     .modal-cancel{background:transparent;color:#888;border:1px solid #2a2a2a;border-radius:8px;padding:.85rem 1.2rem;font-family:'Space Mono',monospace;cursor:pointer}
@@ -62,7 +58,7 @@
     <div class="nav-links">
       <a href="feed.html">Watch</a>
       <a href="profile.html" id="navUser" style="color:#1db954;"></a>
-      <a href="#" onclick="logout();" style="color:#e63212;">Logout</a>
+      <a href="#" onclick="logout();return false;" style="color:#e63212;">Logout</a>
     </div>
   </nav>
 
@@ -136,8 +132,8 @@
 
     function renderVideos(videos){
       const grid=document.getElementById('videoGrid');
-      if(videos.length===0){
-        grid.innerHTML='<div class="empty-state"><h2>No videos yet 😅</h2><p>Be the first to submit!</p></div>';
+      if(!videos.length){
+        grid.innerHTML='<div class="empty-state"><h2>No videos yet 😅</h2><p>Be the first!</p></div>';
         return;
       }
       grid.innerHTML=videos.map(v=>`
@@ -150,40 +146,37 @@
             <div class="video-actions">
               <span class="creator-tag">@${v.creatorName}</span>
               <div class="action-btns">
-                <button class="like-btn" id="like-${v._id}" onclick="likeVideo('${v._id}');">❤️ ${v.likes}</button>
-                <button class="comment-btn" onclick="toggleComments('${v._id}');">💬</button>
-                <button class="share-btn" onclick="shareVideo('${v._id}','${v.title}');">🔗</button>
+                <button class="like-btn" id="like-${v._id}" onclick="likeVideo('${v._id}')">❤️ ${v.likes}</button>
+                <button class="comment-btn" onclick="toggleComments('${v._id}')">💬</button>
+                <button class="share-btn" onclick="shareVideo('${v._id}','${v.title}')">🔗</button>
               </div>
             </div>
           </div>
           <div class="comments-section" id="comments-${v._id}">
-            <input class="comment-input" id="commentInput-${v._id}" type="text" placeholder="Say something funny..."/>
-            <button class="send-comment-btn" id="sendbtn-${v._id}" type="button">💬 Send Comment</button>
-            <div id="commentsList-${v._id}"><div class="no-comments">No comments yet.</div></div>
+            <input class="comment-input" id="ci-${v._id}" type="text" placeholder="Say something funny..."/>
+            <button class="send-comment-btn" id="sb-${v._id}" type="button">💬 Send Comment</button>
+            <div id="cl-${v._id}"><div class="no-comments">No comments yet.</div></div>
           </div>
         </div>
       `).join('');
 
       videos.forEach(v=>{
-        const btn=document.getElementById('sendbtn-'+v._id);
+        const btn=document.getElementById('sb-'+v._id);
         if(btn){
           btn.addEventListener('touchend',function(e){
             e.preventDefault();
-            e.stopPropagation();
             postComment(v._id);
-          });
+          },false);
           btn.addEventListener('click',function(e){
-            e.stopPropagation();
             postComment(v._id);
-          });
+          },false);
         }
       });
     }
 
     function filterVideos(){
       const q=document.getElementById('searchInput').value.toLowerCase();
-      const filtered=allVideos.filter(v=>v.title.toLowerCase().includes(q)||v.creatorName.toLowerCase().includes(q));
-      renderVideos(filtered);
+      renderVideos(allVideos.filter(v=>v.title.toLowerCase().includes(q)||v.creatorName.toLowerCase().includes(q)));
     }
 
     async function likeVideo(id){
@@ -204,11 +197,8 @@
       try{
         const res=await fetch(API+'/api/comments/'+videoId);
         const comments=await res.json();
-        const list=document.getElementById('commentsList-'+videoId);
-        if(comments.length===0){
-          list.innerHTML='<div class="no-comments">No comments yet. Be first! 😄</div>';
-          return;
-        }
+        const list=document.getElementById('cl-'+videoId);
+        if(!comments.length){list.innerHTML='<div class="no-comments">No comments yet. Be first! 😄</div>';return;}
         list.innerHTML=comments.map(c=>`
           <div class="comment-item">
             <div class="comment-author">@${c.username}</div>
@@ -220,7 +210,7 @@
     }
 
     async function postComment(videoId){
-      const input=document.getElementById('commentInput-'+videoId);
+      const input=document.getElementById('ci-'+videoId);
       const text=input.value.trim();
       if(!text){showToast('Type something first 😄');return;}
       try{
@@ -229,17 +219,13 @@
           headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
           body:JSON.stringify({text,username:user.username})
         });
-        if(res.ok){
-          input.value='';
-          await loadComments(videoId);
-          showToast('Comment posted! 😄');
-        }
+        if(res.ok){input.value='';await loadComments(videoId);showToast('Comment posted! 😄');}
       }catch{showToast('Could not post comment');}
     }
 
     function shareVideo(id,title){
       const url=window.location.origin+'/feed.html#'+id;
-      if(navigator.share){navigator.share({title:'Cheka: '+title,url});}
+      if(navigator.share)navigator.share({title:'Cheka: '+title,url});
       else{navigator.clipboard.writeText(url);showToast('Link copied! 🔗');}
     }
 
