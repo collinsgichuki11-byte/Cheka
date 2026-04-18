@@ -27,8 +27,8 @@
       <h1>Kenya's Home<br/>of <span class="highlight">Funny</span></h1>
       <p>Watch hilarious Kenyan content. Support your favourite creators. Laugh till you cry.</p>
       <div class="hero-buttons">
-        <a href="signup.html" class="btn-primary">Start Watching</a>
-        <a href="signup.html" class="btn-secondary">Become a Creator</a>
+        <a href="javascript:goToFeed()" class="btn-primary">Start Watching</a>
+        <a href="javascript:goToFeed()" class="btn-secondary">Become a Creator</a>
       </div>
     </div>
     <div class="hero-visual">
@@ -116,5 +116,15 @@
   </footer>
 
   <script src="script.js"></script>
+<script>
+function goToFeed() {
+  const token = localStorage.getItem('cheka_token');
+  if (token) {
+    window.location.href = 'feed.html';
+  } else {
+    window.location.href = 'signup.html';
+  }
+}
+</script>
 </body>
 </html>
