@@ -185,8 +185,8 @@
           </div>
           <div class="comments-section" id="comments-${v._id}">
             <div class="comment-input-row">
-              <input type="text" id="commentInput-${v._id}" placeholder="Say something funny..."/>
-              <button class="send-btn" onclick="postComment('${v._id}')">Send</button>
+              <input type="text" id="commentInput-${v._id}" placeholder="Say something funny..." onclick="event.stopPropagation()"/>
+              <button class="send-btn" onclick="event.stopPropagation();postComment('${v._id}')">Send</button>
             </div>
             <div id="commentsList-${v._id}"><div class="no-comments">Loading comments...</div></div>
           </div>
