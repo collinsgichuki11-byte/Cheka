@@ -23,14 +23,16 @@
     .video-actions{display:flex;justify-content:space-between;align-items:center;margin-top:.75rem}
     .creator-tag{color:#1db954;font-size:.75rem}
     .action-btns{display:flex;gap:.5rem}
-    .like-btn,.comment-btn,.share-btn{background:transparent;border:1px solid #2a2a2a;color:#f5f5f5;border-radius:20px;padding:.3rem .8rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer}
-    .like-btn:hover{border-color:#e63212;color:#e63212}
+    .like-btn,.comment-btn,.share-btn{background:transparent;border:1px solid #2a2a2a;color:#f5f5f5;border-radius:20px;padding:.3rem .8rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer;touch-action:manipulation}
+    .like-btn.liked{border-color:#e63212;color:#e63212}
     .comment-btn:hover{border-color:#1db954;color:#1db954}
-    .comments-section{padding:1rem;border-top:1px solid #1f1f1f;display:none}
+    .comments-section{display:none;padding:1rem;border-top:1px solid #1f1f1f}
     .comments-section.open{display:block}
     .comment-hint{color:#888;font-size:.75rem;margin-bottom:.5rem}
-    .comment-input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.7rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;box-sizing:border-box;margin-bottom:.5rem}
+    .comment-form{display:flex;gap:.5rem;margin-bottom:1rem}
+    .comment-input{flex:1;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.7rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;min-width:0}
     .comment-input:focus{border-color:#e63212}
+    .send-btn{background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.7rem 1rem;font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer;touch-action:manipulation;flex-shrink:0}
     .comment-item{margin-bottom:.75rem;padding-bottom:.75rem;border-bottom:1px solid #1f1f1f}
     .comment-item:last-child{border-bottom:none}
     .comment-author{color:#1db954;font-size:.75rem;margin-bottom:.2rem}
@@ -44,6 +46,7 @@
     .form-group{margin-bottom:1.2rem}
     .form-group label{display:block;font-size:.8rem;color:#888;margin-bottom:.4rem}
     .form-group input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.85rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none;box-sizing:border-box}
+    .form-group input:focus{border-color:#e63212}
     .modal-btns{display:flex;gap:1rem;margin-top:1rem}
     .modal-submit{flex:1;background:#e63212;color:#f5f5f5;border:none;border-radius:8px;padding:.85rem;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer}
     .modal-cancel{background:transparent;color:#888;border:1px solid #2a2a2a;border-radius:8px;padding:.85rem 1.2rem;font-family:'Space Mono',monospace;cursor:pointer}
@@ -53,6 +56,8 @@
     .loading{text-align:center;padding:4rem;color:#888;font-size:.85rem;grid-column:1/-1}
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1db954;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-size:.85rem;font-weight:700;display:none;z-index:9999}
     .toast.show{display:block}
+    .back-btn{display:inline-flex;align-items:center;gap:.4rem;color:#888;text-decoration:none;font-size:.85rem;margin-bottom:1.5rem;touch-action:manipulation}
+    .back-btn:hover{color:#f5f5f5}
   </style>
 </head>
 <body>
@@ -66,12 +71,13 @@
   </nav>
 
   <div class="feed-container">
+    <a href="index.html" class="back-btn">← Home</a>
     <div class="feed-header">
       <h1>😂 What's Funny Today</h1>
-      <button class="submit-btn" onclick="openModal();">+ Submit</button>
+      <button class="submit-btn" onclick="openModal()">+ Submit</button>
     </div>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search funny videos..." oninput="filterVideos();"/>
+      <input type="text" id="searchInput" placeholder="Search funny videos..." oninput="filterVideos()"/>
     </div>
     <div id="videoGrid" class="video-grid">
       <div class="loading">Loading funny content... 😂</div>
@@ -91,8 +97,8 @@
         <input type="text" id="videoUrl" placeholder="https://youtube.com/watch?v=..."/>
       </div>
       <div class="modal-btns">
-        <button class="modal-cancel" onclick="closeModal();">Cancel</button>
-        <button class="modal-submit" onclick="submitVideo();">Submit</button>
+        <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+        <button class="modal-submit" onclick="submitVideo()">Submit</button>
       </div>
     </div>
   </div>
@@ -104,8 +110,9 @@
     const token=localStorage.getItem('cheka_token');
     const user=JSON.parse(localStorage.getItem('cheka_user')||'{}');
     let allVideos=[];
+    const likedVideos=new Set(JSON.parse(localStorage.getItem('cheka_liked')||'[]'));
 
-    if(!token) window.location.href='login.html';
+    if(!token)window.location.href='login.html';
     document.getElementById('navUser').textContent=user.username?'@'+user.username:'';
 
     function showToast(msg){
@@ -148,19 +155,47 @@
             <div class="video-actions">
               <span class="creator-tag">@${v.creatorName}</span>
               <div class="action-btns">
-                <button class="like-btn" id="like-${v._id}" onclick="likeVideo('${v._id}')">❤️ ${v.likes}</button>
+                <button class="like-btn ${likedVideos.has(v._id)?'liked':''}" id="like-${v._id}" onclick="likeVideo('${v._id}')">
+                  ${likedVideos.has(v._id)?'❤️':'🤍'} ${v.likes}
+                </button>
                 <button class="comment-btn" onclick="toggleComments('${v._id}')">💬</button>
                 <button class="share-btn" onclick="shareVideo('${v._id}','${v.title}')">🔗</button>
               </div>
             </div>
           </div>
           <div class="comments-section" id="comments-${v._id}">
-            <p class="comment-hint">Type comment and press Enter ↵ to send</p>
-            <input class="comment-input" id="ci-${v._id}" type="text" placeholder="Say something funny..." onkeydown="if(event.key==='Enter'){postComment('${v._id}');}"/>
+            <div class="comment-form">
+              <input class="comment-input" id="ci-${v._id}" type="text" placeholder="Say something funny..."/>
+              <button class="send-btn" id="sb-${v._id}" type="button">Send</button>
+            </div>
             <div id="cl-${v._id}"><div class="no-comments">No comments yet.</div></div>
           </div>
         </div>
       `).join('');
+
+      videos.forEach(v=>{
+        const btn=document.getElementById('sb-'+v._id);
+        const input=document.getElementById('ci-'+v._id);
+        if(btn){
+          btn.addEventListener('touchstart',function(e){
+            e.stopPropagation();
+          },true);
+          btn.addEventListener('touchend',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            postComment(v._id);
+          },true);
+          btn.addEventListener('click',function(e){
+            e.stopPropagation();
+            postComment(v._id);
+          },true);
+        }
+        if(input){
+          input.addEventListener('keydown',function(e){
+            if(e.key==='Enter')postComment(v._id);
+          });
+        }
+      });
     }
 
     function filterVideos(){
@@ -170,16 +205,30 @@
 
     async function likeVideo(id){
       try{
-        const res=await fetch(API+'/api/videos/'+id+'/like',{method:'POST'});
+        const res=await fetch(API+'/api/videos/'+id+'/like',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({userId:user.id})
+        });
         const data=await res.json();
-        document.getElementById('like-'+id).textContent='❤️ '+data.likes;
+        const btn=document.getElementById('like-'+id);
+        if(data.liked){
+          likedVideos.add(id);
+          btn.classList.add('liked');
+          btn.textContent='❤️ '+data.likes;
+        }else{
+          likedVideos.delete(id);
+          btn.classList.remove('liked');
+          btn.textContent='🤍 '+data.likes;
+        }
+        localStorage.setItem('cheka_liked',JSON.stringify([...likedVideos]));
       }catch{}
     }
 
     async function toggleComments(videoId){
       const section=document.getElementById('comments-'+videoId);
       section.classList.toggle('open');
-      if(section.classList.contains('open')) await loadComments(videoId);
+      if(section.classList.contains('open'))await loadComments(videoId);
     }
 
     async function loadComments(videoId){
