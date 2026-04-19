@@ -205,6 +205,7 @@ function render(){
           <div class="top-right">
             <a href="feed.html">Watch</a>
             <a href="creators.html">Creators</a>
+            <a href="notifications.html" id="bell-${v._id}">🔔</a>
             <a href="profile.html" class="green">@${user.username||''}</a>
             <a href="#" class="red" onclick="logout();return false;">Logout</a>
           </div>
@@ -267,6 +268,15 @@ async function likeVideo(id){
     });
     document.querySelectorAll('#lc-'+id).forEach(el=>el.textContent=data.likes);
     localStorage.setItem('cheka_liked',JSON.stringify([...liked]));
+    // Send notification to video creator
+    const vid=videos.find(v=>v._id===id);
+    if(vid&&data.liked){
+      fetch(API+'/api/notifications',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({recipient:vid.creator,sender:user.id,type:'like',videoTitle:vid.title,videoId:id})
+      }).catch(()=>{});
+    }
   }catch{}
 }
 
