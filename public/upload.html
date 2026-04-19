@@ -166,20 +166,11 @@
       btn.textContent='Uploading...';
 
       try{
-        // Get signed params from backend
-        const signRes=await fetch(API+'/api/upload/sign',{
-          headers:{'Authorization':'Bearer '+token}
-        });
-        const {timestamp,signature,apiKey}=await signRes.json();
-
-        // Upload directly to Cloudinary
+        // Upload directly to Cloudinary unsigned
         const formData=new FormData();
         formData.append('file',file);
-        formData.append('timestamp',timestamp);
-        formData.append('signature',signature);
-        formData.append('api_key',apiKey);
+        formData.append('upload_preset','cheka_videos');
         formData.append('folder','cheka_videos');
-        formData.append('resource_type','video');
 
         document.getElementById('progressBar').style.display='block';
 
