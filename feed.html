@@ -197,7 +197,10 @@ function render(){
   feed.innerHTML=`
     ${videos.map(v=>`
       <div class="slide" id="s-${v._id}">
-        <iframe src="https://www.youtube.com/embed/${v.youtubeId}?autoplay=0" allowfullscreen loading="lazy"></iframe>
+        \${v.videoType==='direct'
+            ? \`<video src="\${v.videoUrl}" controls playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background:#000"></video>\`
+            : \`<iframe src="https://www.youtube.com/embed/\${v.youtubeId}?autoplay=0" allowfullscreen loading="lazy"></iframe>\`
+          }
         <div class="slide-top-grad"></div>
         <div class="slide-bot-grad"></div>
         <div class="top-bar">
