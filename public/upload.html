@@ -225,6 +225,16 @@
           }
         };
 
+        // Timeout after 3 minutes
+        xhr.timeout = 180000;
+        xhr.ontimeout=()=>{
+          err.textContent='Upload timed out. Try a smaller video or check connection.';
+          err.style.display='block';
+          btn.disabled=false;
+          btn.textContent='🚀 Upload & Post';
+          document.getElementById('progressBar').style.display='none';
+        };
+
         xhr.onerror=()=>{
           err.textContent='Upload failed. Check your connection.';
           err.style.display='block';
