@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Creators — Cheka</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    .container{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+    .back-btn{display:inline-block;color:#888;text-decoration:none;font-size:.85rem;margin-bottom:1.5rem}
+    .page-title{font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;margin-bottom:.5rem}
+    .page-sub{color:#888;font-size:.85rem;margin-bottom:2rem}
+    .creators-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem}
+    .creator-card{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:1.5rem;text-align:center;transition:border-color .2s}
+    .creator-card:hover{border-color:#e63212}
+    .creator-avatar{width:64px;height:64px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:900;color:#f5f5f5;margin:0 auto 1rem}
+    .creator-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.25rem}
+    .creator-stats{color:#888;font-size:.75rem;margin-bottom:.75rem}
+    .creator-videos{color:#1db954;font-size:.75rem}
+    .loading{text-align:center;padding:4rem;color:#888;font-size:.85rem}
+    .empty{text-align:center;padding:4rem;color:#888}
+    .empty h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.5rem}
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo"><a href="index.html" style="text-decoration:none;color:inherit;">😂 Cheka</a></div>
+    <div class="nav-links">
+      <a href="feed.html">Watch</a>
+      <a href="creators.html" style="color:#f5f5f5;">Creators</a>
+      <a href="profile.html" id="navUser" style="color:#1db954;"></a>
+      <a href="#" onclick="logout();return false;" style="color:#e63212;">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <a href="feed.html" class="back-btn">← Back to Feed</a>
+    <h1 class="page-title">🎬 Creators</h1>
+    <p class="page-sub">Kenyan comedy creators making the world laugh</p>
+    <div id="creatorsGrid" class="creators-grid">
+      <div class="loading">Loading creators... 😂</div>
+    </div>
+  </div>
+
+  <script>
+    const API='https://cheka-backend.onrender.com';
+    const token=localStorage.getItem('cheka_token');
+    const user=JSON.parse(localStorage.getItem('cheka_user')||'{}');
+
+    if(!token)window.location.href='login.html';
+    document.getElementById('navUser').textContent=user.username?'@'+user.username:'';
+
+    async function loadCreators(){
+      try{
+        const res=await fetch(API+'/api/videos');
+        const videos=await res.json();
+        const creators={};
+        videos.forEach(v=>{
+          if(!creators[v.creatorName]){
+            creators[v.creatorName]={name:v.creatorName,videos:0,likes:0};
+          }
+          creators[v.creatorName].videos++;
+          creators[v.creatorName].likes+=v.likes;
+        });
+        const list=Object.values(creators).sort((a,b)=>b.likes-a.likes);
+        const grid=document.getElementById('creatorsGrid');
+        if(!list.length){
+          grid.innerHTML='<div class="empty"><h2>No creators yet 😅</h2><p>Be the first to submit a video!</p></div>';
+          return;
+        }
+        grid.innerHTML=list.map((c,i)=>`
+          <div class="creator-card">
+            <div class="creator-avatar">${c.name[0].toUpperCase()}</div>
+            <div class="creator-name">@${c.name}</div>
+            <div class="creator-stats">❤️ ${c.likes} likes</div>
+            <div class="creator-videos">🎬 ${c.videos} video${c.videos!==1?'s':''}</div>
+            ${i===0?'<div style="margin-top:.5rem;background:#e63212;color:#f5f5f5;border-radius:20px;padding:.2rem .75rem;font-size:.7rem;display:inline-block">🏆 Top Creator</div>':''}
+          </div>
+        `).join('');
+      }catch{
+        document.getElementById('creatorsGrid').innerHTML='<div class="loading">Could not load creators.</div>';
+      }
+    }
+
+    function logout(){
+      localStorage.removeItem('cheka_token');
+      localStorage.removeItem('cheka_user');
+      window.location.href='index.html';
+    }
+
+    loadCreators();
+  </script>
+</body>
+</html>
