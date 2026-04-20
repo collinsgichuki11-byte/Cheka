@@ -173,6 +173,13 @@ function timeAgo(d){
   return Math.floor(s/86400)+'d ago';
 }
 
+function getPlayer(v){
+  if(v.videoType==="direct" && v.videoUrl){
+    return '<video src="'+v.videoUrl+'" controls playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background:#000"></video>';
+  }
+  return '<iframe src="https://www.youtube.com/embed/'+v.youtubeId+'?autoplay=0" allowfullscreen loading="lazy"></iframe>';
+}
+
 async function load(){
   try{
     const res=await fetch(API+'/api/videos'+(currentCat?'?category='+currentCat:''));
@@ -183,13 +190,6 @@ async function load(){
   }finally{
     document.getElementById('loader').style.display='none';
   }
-}
-
-function getPlayer(v){
-  if(v.videoType==="direct" && v.videoUrl){
-    return '<video src="'+v.videoUrl+'" controls playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;background:#000"></video>';
-  }
-  return '<iframe src="https://www.youtube.com/embed/'+v.youtubeId+'?autoplay=0" allowfullscreen loading="lazy"></iframe>';
 }
 
 function render(){
