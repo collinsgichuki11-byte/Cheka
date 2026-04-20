@@ -16,11 +16,16 @@
     .creator-card:hover{border-color:#e63212}
     .creator-avatar{width:64px;height:64px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:900;color:#f5f5f5;margin:0 auto 1rem}
     .creator-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.25rem}
-    .creator-stats{color:#888;font-size:.75rem;margin-bottom:.75rem}
-    .creator-videos{color:#1db954;font-size:.75rem}
+    .creator-stats{color:#888;font-size:.75rem;margin-bottom:.5rem}
+    .creator-videos{color:#1db954;font-size:.75rem;margin-bottom:.75rem}
+    .follow-btn{background:transparent;border:1px solid #e63212;color:#e63212;border-radius:20px;padding:.35rem 1rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer;touch-action:manipulation;transition:all .2s}
+    .follow-btn.following{background:#e63212;color:#f5f5f5}
+    .followers{color:#888;font-size:.7rem;margin-top:.4rem}
     .loading{text-align:center;padding:4rem;color:#888;font-size:.85rem}
     .empty{text-align:center;padding:4rem;color:#888}
     .empty h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.5rem}
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1db954;color:#000;padding:.75rem 1.5rem;border-radius:8px;font-size:.85rem;font-weight:700;display:none;z-index:9999}
+    .toast.show{display:block}
   </style>
 </head>
 <body>
@@ -43,6 +48,8 @@
     </div>
   </div>
 
+  <div class="toast" id="toast"></div>
+
   <script>
     const API='https://cheka-backend.onrender.com';
     const token=localStorage.getItem('cheka_token');
@@ -51,6 +58,12 @@
     if(!token)window.location.href='login.html';
     document.getElementById('navUser').textContent=user.username?'@'+user.username:'';
 
+    function showToast(msg){
+      const t=document.getElementById('toast');
+      t.textContent=msg;t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'),2500);
+    }
+
     async function loadCreators(){
       try{
         const res=await fetch(API+'/api/videos');
@@ -58,28 +71,85 @@
         const creators={};
         videos.forEach(v=>{
           if(!creators[v.creatorName]){
-            creators[v.creatorName]={name:v.creatorName,videos:0,likes:0};
+            creators[v.creatorName]={name:v.creatorName,videos:0,likes:0,creatorId:v.creator};
           }
           creators[v.creatorName].videos++;
           creators[v.creatorName].likes+=v.likes;
         });
+
         const list=Object.values(creators).sort((a,b)=>b.likes-a.likes);
         const grid=document.getElementById('creatorsGrid');
+
         if(!list.length){
           grid.innerHTML='<div class="empty"><h2>No creators yet 😅</h2><p>Be the first to submit a video!</p></div>';
           return;
         }
+
+        // Load follower counts
+        await Promise.all(list.map(async c=>{
+          try{
+            const r=await fetch(API+'/api/follows/'+c.creatorId+'/count');
+            const d=await r.json();
+            c.followers=d.count||0;
+          }catch{c.followers=0;}
+
+          try{
+            const r=await fetch(API+'/api/follows/'+c.creatorId+'/check',{
+              headers:{'Authorization':'Bearer '+token}
+            });
+            const d=await r.json();
+            c.isFollowing=d.following||false;
+          }catch{c.isFollowing=false;}
+        }));
+
         grid.innerHTML=list.map((c,i)=>`
           <div class="creator-card">
             <div class="creator-avatar">${c.name[0].toUpperCase()}</div>
             <div class="creator-name">@${c.name}</div>
             <div class="creator-stats">❤️ ${c.likes} likes</div>
             <div class="creator-videos">🎬 ${c.videos} video${c.videos!==1?'s':''}</div>
+            ${c.creatorId&&c.creatorId!==user.id?`
+              <button class="follow-btn ${c.isFollowing?'following':''}" 
+                id="follow-${c.creatorId}"
+                onclick="toggleFollow('${c.creatorId}','${c.name}')">
+                ${c.isFollowing?'✓ Following':'+ Follow'}
+              </button>
+              <div class="followers" id="followers-${c.creatorId}">${c.followers} follower${c.followers!==1?'s':''}</div>
+            `:'<div class="followers">That\'s you! 😄</div>'}
             ${i===0?'<div style="margin-top:.5rem;background:#e63212;color:#f5f5f5;border-radius:20px;padding:.2rem .75rem;font-size:.7rem;display:inline-block">🏆 Top Creator</div>':''}
           </div>
         `).join('');
       }catch{
         document.getElementById('creatorsGrid').innerHTML='<div class="loading">Could not load creators.</div>';
+      }
+    }
+
+    async function toggleFollow(creatorId, creatorName){
+      try{
+        const res=await fetch(API+'/api/follows/'+creatorId,{
+          method:'POST',
+          headers:{'Authorization':'Bearer '+token}
+        });
+        const data=await res.json();
+        const btn=document.getElementById('follow-'+creatorId);
+        const followersEl=document.getElementById('followers-'+creatorId);
+
+        if(data.following){
+          btn.classList.add('following');
+          btn.textContent='✓ Following';
+          showToast('Following @'+creatorName+' 🎉');
+        }else{
+          btn.classList.remove('following');
+          btn.textContent='+ Follow';
+          showToast('Unfollowed @'+creatorName);
+        }
+
+        // Update followers count
+        const r=await fetch(API+'/api/follows/'+creatorId+'/count');
+        const d=await r.json();
+        followersEl.textContent=d.count+' follower'+(d.count!==1?'s':'');
+      }catch{
+        showToast('Could not follow. Try again.');
       }
     }
 

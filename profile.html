@@ -133,6 +133,13 @@
         }));
         document.getElementById('totalComments').textContent=totalComments;
 
+        // Load followers
+        try{
+          const fr=await fetch(API+'/api/follows/'+user.id+'/count');
+          const fd=await fr.json();
+          document.getElementById('totalFollowers').textContent=fd.count||0;
+        }catch{}
+
         const grid=document.getElementById('myVideos');
         if(!mine.length){
           grid.innerHTML=`
