@@ -237,24 +237,6 @@ function render(){
         ${getPlayer(v)}
         <div class="slide-top-grad"></div>
         <div class="slide-bot-grad"></div>
-        <div class="top-bar">
-          <a href="index.html" class="top-logo">😂 Cheka</a>
-          <div class="top-right">
-            <a href="feed.html">Watch</a>
-            <a href="creators.html">Creators</a>
-            <a href="notifications.html" id="bell-${v._id}">🔔</a>
-            <a href="profile.html" class="green">@${user.username||''}</a>
-            <a href="#" class="red" onclick="logout();return false;">Logout</a>
-          </div>
-        </div>
-        <div class="cats">
-          <button class="cat ${currentCat===''?'active':''}" onclick="setCat('',this)">All</button>
-          <button class="cat ${currentCat==='Comedy'?'active':''}" onclick="setCat('Comedy',this)">😂 Comedy</button>
-          <button class="cat ${currentCat==='Skits'?'active':''}" onclick="setCat('Skits',this)">🎭 Skits</button>
-          <button class="cat ${currentCat==='Memes'?'active':''}" onclick="setCat('Memes',this)">🤣 Memes</button>
-          <button class="cat ${currentCat==='Roasts'?'active':''}" onclick="setCat('Roasts',this)">🔥 Roasts</button>
-          <button class="cat ${currentCat==='Standup'?'active':''}" onclick="setCat('Standup',this)">🎤 Standup</button>
-        </div>
         <div class="caption">
           <div class="caption-cat">${v.category||'General'}</div>
           <div class="caption-title">${v.title}</div>
