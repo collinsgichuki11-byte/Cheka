@@ -99,6 +99,35 @@
   <p>Loading funny content...</p>
 </div>
 
+
+<div class="top-bar" style="position:fixed;top:0;left:0;right:0;z-index:100;">
+  <a href="index.html" class="top-logo">😂 Cheka</a>
+  <div class="top-right">
+    <a href="feed.html">Watch</a>
+    <a href="creators.html">Creators</a>
+    <a href="notifications.html">🔔</a>
+    <a href="profile.html" class="green" id="navUser"></a>
+    <a href="#" class="red" onclick="logout();return false;">Logout</a>
+  </div>
+</div>
+
+<div class="cats" id="catsBar">
+  <button class="cat active" onclick="setCat('',this)">All</button>
+  <button class="cat" onclick="setCat('Comedy',this)">😂 Comedy</button>
+  <button class="cat" onclick="setCat('Skits',this)">🎭 Skits</button>
+  <button class="cat" onclick="setCat('Memes',this)">🤣 Memes</button>
+  <button class="cat" onclick="setCat('Roasts',this)">🔥 Roasts</button>
+  <button class="cat" onclick="setCat('Standup',this)">🎤 Standup</button>
+</div>
+
+<button class="fab" onclick="openModal()">+</button>
+
+<div class="bot-bar">
+  <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
+  <a href="feed.html" class="bot-btn active"><span class="bicon">😂</span><span>Watch</span></a>
+  <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Profile</span></a>
+</div>
+
 <div class="feed" id="feed"></div>
 
 <!-- Comments Modal -->
@@ -245,12 +274,7 @@ function render(){
             <span class="label">Share</span>
           </div>
         </div>
-        <button class="fab" onclick="openModal()">+</button>
-        <div class="bot-bar">
-          <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
-          <a href="feed.html" class="bot-btn active"><span class="bicon">😂</span><span>Watch</span></a>
-          <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Profile</span></a>
-        </div>
+
       </div>
     `).join('')}
   `;
