@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cheka</string>
+    <string name="title_activity_main">Cheka</string>
+    <string name="package_name">cheka.app</string>
+    <string name="custom_url_scheme">cheka.app</string>
+</resources>
