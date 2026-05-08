@@ -203,11 +203,10 @@ function render(){
         <div class="top-bar">
           <a href="index.html" class="top-logo">😂 Cheka</a>
           <div class="top-right">
-            <a href="feed.html">Watch</a>
-            <a href="creators.html">Creators</a>
-            <a href="notifications.html" id="bell-${v._id}">🔔</a>
-            <a href="profile.html" class="green">@${user.username||''}</a>
-            <a href="#" class="red" onclick="logout();return false;">Logout</a>
+            <a href="battles.html">⚔️</a>
+            <a href="live.html">🔴</a>
+            <a href="search.html">🔍</a>
+            <a href="notifications.html">🔔</a>
           </div>
         </div>
         <div class="cats">
@@ -241,7 +240,9 @@ function render(){
         <div class="bot-bar">
           <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
           <a href="feed.html" class="bot-btn active"><span class="bicon">😂</span><span>Watch</span></a>
-          <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Profile</span></a>
+          <a href="upload.html" class="bot-btn"><span class="bicon">➕</span><span>Upload</span></a>
+          <a href="messages.html" class="bot-btn"><span class="bicon">💬</span><span>DMs</span></a>
+          <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Me</span></a>
         </div>
       </div>
     `).join('')}

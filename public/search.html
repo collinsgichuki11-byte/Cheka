@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Search — Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:#000;color:#f5f5f5;font-family:'Space Mono',monospace;min-height:100%}
+    .top-bar{position:sticky;top:0;z-index:100;background:#0a0a0a;border-bottom:1px solid #1f1f1f;padding:.85rem 1rem}
+    .search-row{display:flex;align-items:center;gap:.75rem}
+    .search-row a{color:#888;text-decoration:none;font-size:1.2rem}
+    .search-input{flex:1;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:24px;padding:.65rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none}
+    .search-input:focus{border-color:#e63212}
+    .page{padding:1rem;padding-bottom:5rem}
+    .section-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:900;margin:.5rem 0 .75rem;color:#888}
+    .user-card{background:#111;border:1px solid #1f1f1f;border-radius:12px;padding:.9rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.85rem;cursor:pointer;touch-action:manipulation}
+    .user-card:active{background:#1a1a1a}
+    .user-avatar{width:44px;height:44px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;font-size:1.1rem;flex-shrink:0}
+    .user-info{flex:1;min-width:0}
+    .user-name{font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:.35rem}
+    .verified{color:#1db954;font-size:.8rem}
+    .user-display{color:#888;font-size:.75rem;margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .msg-btn{background:none;border:1px solid #2a2a2a;color:#f5f5f5;border-radius:20px;padding:.4rem .85rem;font-family:'Space Mono',monospace;font-size:.7rem;cursor:pointer;touch-action:manipulation;flex-shrink:0}
+    .msg-btn:active{background:#1a1a1a}
+    .empty{text-align:center;padding:3rem 1rem;color:#888}
+    .empty h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.5rem}
+    .bot-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;align-items:center;padding:.6rem 1rem env(safe-area-inset-bottom,.4rem);background:#0a0a0a;border-top:1px solid #1f1f1f}
+    .bot-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-decoration:none;color:rgba(255,255,255,.5);font-size:.55rem;touch-action:manipulation}
+    .bot-btn.active{color:#f5f5f5}
+    .bot-btn .bicon{font-size:1.3rem}
+    .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#1db954;color:#000;padding:.65rem 1.4rem;border-radius:8px;font-size:.8rem;font-weight:700;display:none;z-index:9999;white-space:nowrap}
+    .toast.show{display:block}
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="search-row">
+    <a href="feed.html">←</a>
+    <input class="search-input" id="searchInput" type="text" placeholder="Search creators..." autofocus autocomplete="off"/>
+  </div>
+</div>
+
+<div class="page">
+  <div id="results">
+    <div class="empty"><p style="font-size:2.5rem">🔍</p><h2>Find Creators</h2><p>Search by username to find people</p></div>
+  </div>
+</div>
+
+<div class="bot-bar">
+  <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
+  <a href="feed.html" class="bot-btn"><span class="bicon">😂</span><span>Watch</span></a>
+  <a href="upload.html" class="bot-btn"><span class="bicon">➕</span><span>Upload</span></a>
+  <a href="messages.html" class="bot-btn"><span class="bicon">💬</span><span>DMs</span></a>
+  <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Me</span></a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API='https://cheka-backend.onrender.com';
+const token=localStorage.getItem('cheka_token');
+const user=JSON.parse(localStorage.getItem('cheka_user')||'{}');
+if(!token)window.location.href='login.html';
+
+let searchTimer=null;
+const followState={};
+
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+document.getElementById('searchInput').addEventListener('input',function(){
+  const q=this.value.trim();
+  clearTimeout(searchTimer);
+  if(!q){
+    document.getElementById('results').innerHTML='<div class="empty"><p style="font-size:2.5rem">🔍</p><h2>Find Creators</h2><p>Search by username to find people</p></div>';
+    return;
+  }
+  searchTimer=setTimeout(()=>search(q),300);
+});
+
+async function search(q){
+  document.getElementById('results').innerHTML='<div style="text-align:center;padding:2rem;color:#888">Searching...</div>';
+  try{
+    const res=await fetch(API+'/api/users?search='+encodeURIComponent(q),{headers:{'Authorization':'Bearer '+token}});
+    const users=await res.json();
+    if(!users.length){
+      document.getElementById('results').innerHTML='<div class="empty"><p style="font-size:2rem">🤷</p><h2>No results</h2><p>Try a different username</p></div>';
+      return;
+    }
+    document.getElementById('results').innerHTML=`<div class="section-title">${users.length} result${users.length!==1?'s':''}</div>`+
+      users.map(u=>`
+        <div class="user-card">
+          <div class="user-avatar">${u.username[0].toUpperCase()}</div>
+          <div class="user-info">
+            <div class="user-name">@${u.username}${u.isVerified?'<span class="verified">✓</span>':''}</div>
+            ${u.displayName?`<div class="user-display">${u.displayName}</div>`:''}
+          </div>
+          <button class="msg-btn" onclick="startDM('${u._id}','${u.username}')">Message</button>
+        </div>
+      `).join('');
+  }catch{
+    document.getElementById('results').innerHTML='<div style="text-align:center;padding:2rem;color:#888">Could not search</div>';
+  }
+}
+
+function startDM(userId,username){
+  window.location.href='messages.html?user='+userId+'&name='+encodeURIComponent(username);
+}
+</script>
+</body>
+</html>

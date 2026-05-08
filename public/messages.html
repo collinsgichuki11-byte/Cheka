@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Messages — Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;background:#000;color:#f5f5f5;font-family:'Space Mono',monospace}
+    .top-bar{position:fixed;top:0;left:0;right:0;z-index:100;background:#0a0a0a;border-bottom:1px solid #1f1f1f;display:flex;align-items:center;gap:1rem;padding:.85rem 1rem}
+    .top-bar h1{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;flex:1}
+    .top-bar button{background:none;border:none;color:#f5f5f5;font-size:1.3rem;cursor:pointer;padding:.25rem}
+    .search-bar{position:fixed;top:3.5rem;left:0;right:0;z-index:99;background:#0a0a0a;padding:.6rem 1rem;border-bottom:1px solid #1f1f1f}
+    .search-input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.6rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none}
+    .search-input:focus{border-color:#e63212}
+    .search-results{position:absolute;top:100%;left:1rem;right:1rem;background:#111;border:1px solid #2a2a2a;border-radius:8px;max-height:200px;overflow-y:auto;z-index:200}
+    .search-item{padding:.75rem 1rem;cursor:pointer;border-bottom:1px solid #1f1f1f;font-size:.85rem}
+    .search-item:hover{background:#1a1a1a}
+    .search-item:last-child{border-bottom:none}
+    .inbox{margin-top:7.5rem;padding-bottom:5rem}
+    .convo{display:flex;align-items:center;gap:.85rem;padding:1rem;border-bottom:1px solid #1a1a1a;cursor:pointer;touch-action:manipulation}
+    .convo:active{background:#111}
+    .convo-avatar{width:48px;height:48px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;font-size:1.2rem;flex-shrink:0}
+    .convo-body{flex:1;min-width:0}
+    .convo-name{font-size:.9rem;font-weight:700;margin-bottom:.2rem;display:flex;align-items:center;gap:.4rem}
+    .convo-preview{color:#888;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .convo-time{color:#555;font-size:.65rem;flex-shrink:0}
+    .unread-dot{width:8px;height:8px;border-radius:50%;background:#e63212;flex-shrink:0}
+    .empty{text-align:center;padding:3rem 1rem;color:#888}
+    .empty h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.5rem}
+    /* THREAD */
+    .thread{display:none;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:#000}
+    .thread.open{display:flex}
+    .thread-header{background:#0a0a0a;border-bottom:1px solid #1f1f1f;padding:.85rem 1rem;display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+    .thread-back{background:none;border:none;color:#f5f5f5;font-size:1.3rem;cursor:pointer}
+    .thread-avatar{width:36px;height:36px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;flex-shrink:0}
+    .thread-name{font-family:'Syne',sans-serif;font-weight:900;font-size:1rem;flex:1}
+    .thread-msgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.6rem}
+    .bubble{max-width:75%;padding:.65rem .95rem;border-radius:16px;font-size:.85rem;line-height:1.5;word-break:break-word}
+    .bubble.mine{align-self:flex-end;background:#e63212;color:#fff;border-bottom-right-radius:4px}
+    .bubble.theirs{align-self:flex-start;background:#1a1a1a;color:#f5f5f5;border-bottom-left-radius:4px}
+    .bubble-time{font-size:.6rem;opacity:.6;margin-top:.25rem;text-align:right}
+    .typing-indicator{align-self:flex-start;background:#1a1a1a;border-radius:16px;border-bottom-left-radius:4px;padding:.65rem .95rem;font-size:.8rem;color:#888}
+    .thread-input{background:#0a0a0a;border-top:1px solid #1f1f1f;padding:.75rem 1rem;display:flex;gap:.5rem;flex-shrink:0}
+    .thread-input input{flex:1;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:24px;padding:.65rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none}
+    .thread-input input:focus{border-color:#e63212}
+    .thread-send{background:#e63212;border:none;border-radius:50%;width:40px;height:40px;color:#fff;font-size:1.1rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .bot-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;align-items:center;padding:.6rem 1rem env(safe-area-inset-bottom,.4rem);background:#0a0a0a;border-top:1px solid #1f1f1f}
+    .bot-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-decoration:none;color:rgba(255,255,255,.5);font-size:.55rem;touch-action:manipulation}
+    .bot-btn.active{color:#f5f5f5}
+    .bot-btn .bicon{font-size:1.3rem}
+    .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#1db954;color:#000;padding:.65rem 1.4rem;border-radius:8px;font-size:.8rem;font-weight:700;display:none;z-index:9999;white-space:nowrap}
+    .toast.show{display:block}
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>💬 Messages</h1>
+</div>
+<div class="search-bar">
+  <input class="search-input" id="searchInput" type="text" placeholder="Search for a user to message..." autocomplete="off"/>
+  <div class="search-results" id="searchResults" style="display:none"></div>
+</div>
+
+<div class="inbox" id="inbox">
+  <div class="empty"><p style="font-size:2rem">💬</p><p style="margin-top:.5rem">Loading...</p></div>
+</div>
+
+<!-- Thread panel -->
+<div class="thread" id="thread">
+  <div class="thread-header">
+    <button class="thread-back" onclick="closeThread()">←</button>
+    <div class="thread-avatar" id="threadAvatar"></div>
+    <div class="thread-name" id="threadName"></div>
+  </div>
+  <div class="thread-msgs" id="threadMsgs"></div>
+  <div class="thread-input">
+    <input type="text" id="msgInput" placeholder="Say something funny..."/>
+    <button class="thread-send" id="sendBtn">➤</button>
+  </div>
+</div>
+
+<div class="bot-bar">
+  <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
+  <a href="feed.html" class="bot-btn"><span class="bicon">😂</span><span>Watch</span></a>
+  <a href="upload.html" class="bot-btn"><span class="bicon">➕</span><span>Upload</span></a>
+  <a href="messages.html" class="bot-btn active"><span class="bicon">💬</span><span>DMs</span></a>
+  <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Me</span></a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API='https://cheka-backend.onrender.com';
+const WS_URL='wss://cheka-backend.onrender.com/ws/dm';
+const token=localStorage.getItem('cheka_token');
+const user=JSON.parse(localStorage.getItem('cheka_user')||'{}');
+if(!token)window.location.href='login.html';
+
+let activeUserId=null;
+let activeUsername='';
+let ws=null;
+let typingTimer=null;
+let searchTimer=null;
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function timeAgo(d){
+  const s=(Date.now()-new Date(d))/1000;
+  if(s<60)return 'now';
+  if(s<3600)return Math.floor(s/60)+'m';
+  if(s<86400)return Math.floor(s/3600)+'h';
+  return Math.floor(s/86400)+'d';
+}
+
+async function loadInbox(){
+  try{
+    const res=await fetch(API+'/api/messages',{headers:{'Authorization':'Bearer '+token}});
+    const convos=await res.json();
+    const inbox=document.getElementById('inbox');
+    if(!Array.isArray(convos)||!convos.length){
+      inbox.innerHTML=`<div class="empty"><p style="font-size:2.5rem">💬</p><h2>No messages yet</h2><p>Search for a user above to start chatting</p></div>`;
+      return;
+    }
+    inbox.innerHTML=convos.map(c=>`
+      <div class="convo" onclick="openThread('${c.userId}','${c.username}')">
+        <div class="convo-avatar">${c.username?c.username[0].toUpperCase():'?'}</div>
+        <div class="convo-body">
+          <div class="convo-name">@${c.username}${c.unread?`<span class="unread-dot"></span>`:''}</div>
+          <div class="convo-preview">${c.lastMessage||'...'}</div>
+        </div>
+        <div class="convo-time">${timeAgo(c.lastTime)}</div>
+      </div>
+    `).join('');
+  }catch(e){
+    document.getElementById('inbox').innerHTML='<div class="empty"><p>Could not load messages</p></div>';
+  }
+}
+
+async function openThread(userId,username){
+  activeUserId=userId;
+  activeUsername=username;
+  document.getElementById('threadAvatar').textContent=username[0].toUpperCase();
+  document.getElementById('threadName').textContent='@'+username;
+  document.getElementById('thread').classList.add('open');
+  document.getElementById('msgInput').focus();
+  await loadThread();
+  markRead();
+  connectWS();
+}
+
+function closeThread(){
+  document.getElementById('thread').classList.remove('open');
+  activeUserId=null;
+  if(ws){ws.close();ws=null;}
+  loadInbox();
+}
+
+async function loadThread(){
+  if(!activeUserId)return;
+  try{
+    const res=await fetch(API+'/api/messages/'+activeUserId,{headers:{'Authorization':'Bearer '+token}});
+    const msgs=await res.json();
+    const box=document.getElementById('threadMsgs');
+    if(!msgs.length){box.innerHTML='<div style="text-align:center;color:#555;padding:2rem;font-size:.8rem">No messages yet. Say hi! 👋</div>';return;}
+    box.innerHTML=msgs.map(m=>{
+      const mine=m.from===user.id||m.fromUsername===user.username;
+      return `<div class="bubble ${mine?'mine':'theirs'}">${escHtml(m.text||'')}<div class="bubble-time">${timeAgo(m.createdAt)}</div></div>`;
+    }).join('');
+    box.scrollTop=box.scrollHeight;
+  }catch{toast('Could not load messages');}
+}
+
+async function markRead(){
+  if(!activeUserId)return;
+  await fetch(API+'/api/messages/'+activeUserId+'/read',{method:'PUT',headers:{'Authorization':'Bearer '+token}}).catch(()=>{});
+}
+
+async function sendMessage(){
+  const input=document.getElementById('msgInput');
+  const text=input.value.trim();
+  if(!text||!activeUserId)return;
+  input.value='';
+  try{
+    const res=await fetch(API+'/api/messages/'+activeUserId,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({text})
+    });
+    if(res.ok)await loadThread();
+    else{const d=await res.json().catch(()=>({}));toast(d.msg||'Could not send');}
+  }catch{toast('Network error 😬');}
+}
+
+function connectWS(){
+  if(ws)ws.close();
+  try{
+    ws=new WebSocket(WS_URL+'?token='+encodeURIComponent(token));
+    ws.onmessage=(e)=>{
+      try{
+        const data=JSON.parse(e.data);
+        if(data.type==='message'&&activeUserId)loadThread();
+        if(data.type==='typing'&&data.from===activeUserId){
+          const box=document.getElementById('threadMsgs');
+          let ind=document.getElementById('typingInd');
+          if(data.isTyping){
+            if(!ind){ind=document.createElement('div');ind.id='typingInd';ind.className='typing-indicator';ind.textContent='typing...';box.appendChild(ind);}
+            box.scrollTop=box.scrollHeight;
+          } else {if(ind)ind.remove();}
+        }
+      }catch{}
+    };
+    ws.onclose=()=>{ws=null;};
+  }catch{}
+}
+
+function sendTyping(isTyping){
+  if(ws&&ws.readyState===1&&activeUserId)ws.send(JSON.stringify({type:'typing',to:activeUserId,isTyping}));
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// Search
+document.getElementById('searchInput').addEventListener('input',function(){
+  const q=this.value.trim();
+  clearTimeout(searchTimer);
+  if(!q){document.getElementById('searchResults').style.display='none';return;}
+  searchTimer=setTimeout(async()=>{
+    try{
+      const res=await fetch(API+'/api/users?search='+encodeURIComponent(q),{headers:{'Authorization':'Bearer '+token}});
+      const users=await res.json();
+      const box=document.getElementById('searchResults');
+      if(!users.length){box.style.display='none';return;}
+      box.innerHTML=users.map(u=>`<div class="search-item" onclick="startChat('${u._id}','${u.username}')">@${u.username}${u.displayName?' — '+u.displayName:''}</div>`).join('');
+      box.style.display='block';
+    }catch{}
+  },300);
+});
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.search-bar'))document.getElementById('searchResults').style.display='none';
+});
+
+function startChat(userId,username){
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchResults').style.display='none';
+  openThread(userId,username);
+}
+
+document.getElementById('sendBtn').addEventListener('click',sendMessage);
+document.getElementById('msgInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter')sendMessage();
+  else{sendTyping(true);clearTimeout(typingTimer);typingTimer=setTimeout(()=>sendTyping(false),2000);}
+});
+
+const _p=new URLSearchParams(window.location.search);
+const _u=_p.get('user'),_n=_p.get('name');
+loadInbox();
+if(_u&&_n)setTimeout(()=>openThread(_u,decodeURIComponent(_n)),500);
+</script>
+</body>
+</html>

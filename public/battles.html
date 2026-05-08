@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Battles — Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:#000;color:#f5f5f5;font-family:'Space Mono',monospace;min-height:100%}
+    .top-bar{position:sticky;top:0;z-index:100;background:#0a0a0a;border-bottom:1px solid #1f1f1f;display:flex;align-items:center;gap:1rem;padding:.85rem 1rem}
+    .top-bar h1{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;flex:1}
+    .top-bar a{color:#888;text-decoration:none;font-size:.8rem}
+    .page{padding:1rem;padding-bottom:5rem}
+    /* TODAY CARD */
+    .today-card{background:linear-gradient(135deg,#e63212,#ff6b35);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+    .today-card::after{content:'⚔️';position:absolute;right:-10px;top:-10px;font-size:5rem;opacity:.15}
+    .today-label{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.8;margin-bottom:.5rem}
+    .today-prompt{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:900;line-height:1.4;margin-bottom:1rem}
+    .today-meta{font-size:.75rem;opacity:.8;margin-bottom:1.2rem}
+    .enter-btn{display:inline-block;background:#fff;color:#e63212;border-radius:8px;padding:.7rem 1.5rem;text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;touch-action:manipulation}
+    .countdown{font-size:.75rem;opacity:.75;margin-top:.75rem}
+    /* ENTRIES */
+    .section-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:900;margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+    .entry-card{background:#111;border:1px solid #1f1f1f;border-radius:12px;margin-bottom:.75rem;overflow:hidden;display:flex;align-items:stretch;gap:0}
+    .entry-rank{width:40px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;font-size:1rem;flex-shrink:0;color:#888}
+    .entry-rank.gold{color:#ffd700}
+    .entry-rank.silver{color:#c0c0c0}
+    .entry-rank.bronze{color:#cd7f32}
+    .entry-body{flex:1;padding:.85rem;min-width:0}
+    .entry-title{font-size:.85rem;font-weight:700;margin-bottom:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .entry-creator{color:#1db954;font-size:.75rem;margin-bottom:.3rem}
+    .entry-score{color:#888;font-size:.7rem}
+    .entry-score span{color:#e63212;font-weight:700}
+    /* PAST BATTLES */
+    .past-card{background:#111;border:1px solid #1f1f1f;border-radius:12px;padding:.85rem;margin-bottom:.75rem;cursor:pointer;touch-action:manipulation}
+    .past-card:active{background:#1a1a1a}
+    .past-date{font-size:.75rem;color:#888;margin-bottom:.35rem}
+    .past-prompt{font-size:.85rem;font-weight:700;margin-bottom:.35rem}
+    .past-winner{font-size:.75rem;color:#ffd700}
+    .past-entries{font-size:.7rem;color:#555;margin-top:.2rem}
+    /* NO PROMPT */
+    .no-prompt{text-align:center;padding:2rem 1rem;color:#888}
+    .no-prompt h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.5rem}
+    /* BOT NAV */
+    .bot-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;align-items:center;padding:.6rem 1rem env(safe-area-inset-bottom,.4rem);background:#0a0a0a;border-top:1px solid #1f1f1f}
+    .bot-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-decoration:none;color:rgba(255,255,255,.5);font-size:.55rem;touch-action:manipulation}
+    .bot-btn.active{color:#f5f5f5}
+    .bot-btn .bicon{font-size:1.3rem}
+    .loader{text-align:center;padding:2rem;color:#888;font-size:.8rem}
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>⚔️ Daily Battles</h1>
+  <a href="feed.html">Watch</a>
+</div>
+
+<div class="page">
+  <div id="todaySection"><div class="loader">Loading today's battle...</div></div>
+  <div id="leaderboard"></div>
+  <div class="section-title">📅 Past Battles</div>
+  <div id="pastBattles"><div class="loader">Loading...</div></div>
+</div>
+
+<div class="bot-bar">
+  <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
+  <a href="feed.html" class="bot-btn"><span class="bicon">😂</span><span>Watch</span></a>
+  <a href="upload.html" class="bot-btn"><span class="bicon">➕</span><span>Upload</span></a>
+  <a href="messages.html" class="bot-btn"><span class="bicon">💬</span><span>DMs</span></a>
+  <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Me</span></a>
+</div>
+
+<script>
+const API='https://cheka-backend.onrender.com';
+const token=localStorage.getItem('cheka_token');
+
+function timeUntilMidnight(){
+  const now=new Date();
+  const midnight=new Date();midnight.setUTCHours(24,0,0,0);
+  const diff=midnight-now;
+  const h=Math.floor(diff/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  return h+'h '+m+'m left today';
+}
+
+async function loadToday(){
+  try{
+    const res=await fetch(API+'/api/battles/today');
+    const data=await res.json();
+    const sec=document.getElementById('todaySection');
+
+    if(!data.prompt){
+      sec.innerHTML=`<div class="no-prompt"><p style="font-size:2.5rem">😴</p><h2>No Battle Today</h2><p>Check back soon — daily prompts drop at midnight UTC</p></div>`;
+      document.getElementById('leaderboard').innerHTML='';
+      return;
+    }
+
+    sec.innerHTML=`
+      <div class="today-card">
+        <div class="today-label">Today's Prompt</div>
+        <div class="today-prompt">${data.prompt.text}</div>
+        <div class="today-meta">${data.totalEntries} entr${data.totalEntries===1?'y':'ies'} • ${timeUntilMidnight()}</div>
+        <a href="upload.html" class="enter-btn">➕ Enter Battle</a>
+      </div>
+    `;
+
+    if(data.entries&&data.entries.length){
+      const lb=document.getElementById('leaderboard');
+      lb.innerHTML=`<div class="section-title">🏆 Leaderboard</div>`+
+        data.entries.slice(0,20).map((e,i)=>`
+          <div class="entry-card">
+            <div class="entry-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
+            <div class="entry-body">
+              <div class="entry-title">${e.title||'Untitled'}</div>
+              <div class="entry-creator">@${e.creatorName||'unknown'}</div>
+              <div class="entry-score">Score: <span>${e.score}</span> &nbsp;❤️ ${e.likes||0} &nbsp;👁 ${e.views||0}</div>
+            </div>
+          </div>
+        `).join('');
+    } else {
+      document.getElementById('leaderboard').innerHTML=`<div class="section-title">🏆 Leaderboard</div><div class="no-prompt"><p style="font-size:2rem">🎬</p><h2>No entries yet!</h2><p>Be the first to enter today's battle</p></div>`;
+    }
+  }catch(e){
+    document.getElementById('todaySection').innerHTML='<div class="loader">Could not load battle</div>';
+  }
+}
+
+async function loadPast(){
+  try{
+    const res=await fetch(API+'/api/battles');
+    const data=await res.json();
+    const box=document.getElementById('pastBattles');
+    if(!data||!data.length){box.innerHTML='<div class="loader">No past battles yet</div>';return;}
+    box.innerHTML=data.map(b=>`
+      <div class="past-card">
+        <div class="past-date">📅 ${b.date}</div>
+        <div class="past-prompt">${b.prompt?.text||'No prompt'}</div>
+        ${b.winner?`<div class="past-winner">🏆 Winner: @${b.winner.creatorName} — "${b.winner.title}" (❤️ ${b.winner.likes})</div>`:''}
+        <div class="past-entries">${b.entries} entr${b.entries===1?'y':'ies'}</div>
+      </div>
+    `).join('');
+  }catch{
+    document.getElementById('pastBattles').innerHTML='<div class="loader">Could not load past battles</div>';
+  }
+}
+
+loadToday();
+loadPast();
+</script>
+</body>
+</html>
