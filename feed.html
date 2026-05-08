@@ -308,7 +308,8 @@ async function sendComment(){
       body:JSON.stringify({text,username:user.username})
     });
     if(res.ok){input.value='';await loadComments(v._id);toast('Comment posted! 😄');}
-  }catch{toast('Could not post');}
+    else{const d=await res.json().catch(()=>({}));toast(d.msg||'Could not post comment 😬');}
+  }catch{toast('Network error — check connection 😬');}
 }
 
 function shareVideo(){
