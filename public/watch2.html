@@ -118,6 +118,10 @@
 </div>
 
 
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>Submit a Video 🎬</h2>
+    <div class="err" id="modalErr"></div>
     <div class="fg">
       <label>Video Title</label>
       <input type="text" id="vTitle" placeholder="e.g. When matatu conductor..."/>
@@ -324,7 +328,8 @@ async function sendComment(){
       body:JSON.stringify({text,username:user.username})
     });
     if(res.ok){input.value='';await loadComments(activeVideoId);toast('Comment posted! 😄');}
-  }catch{toast('Could not post comment');}
+    else{const d=await res.json().catch(()=>({}));toast(d.msg||'Could not post comment 😬');}
+  }catch{toast('Network error — check connection 😬');}
 }
 
 function shareVideo(id,title){
