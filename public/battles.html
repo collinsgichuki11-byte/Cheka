@@ -4,150 +4,247 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Battles — Cheka</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{background:#000;color:#f5f5f5;font-family:'Space Mono',monospace;min-height:100%}
-    .top-bar{position:sticky;top:0;z-index:100;background:#0a0a0a;border-bottom:1px solid #1f1f1f;display:flex;align-items:center;gap:1rem;padding:.85rem 1rem}
-    .top-bar h1{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;flex:1}
-    .top-bar a{color:#888;text-decoration:none;font-size:.8rem}
-    .page{padding:1rem;padding-bottom:5rem}
-    /* TODAY CARD */
-    .today-card{background:linear-gradient(135deg,#e63212,#ff6b35);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
-    .today-card::after{content:'⚔️';position:absolute;right:-10px;top:-10px;font-size:5rem;opacity:.15}
-    .today-label{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;opacity:.8;margin-bottom:.5rem}
-    .today-prompt{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:900;line-height:1.4;margin-bottom:1rem}
-    .today-meta{font-size:.75rem;opacity:.8;margin-bottom:1.2rem}
-    .enter-btn{display:inline-block;background:#fff;color:#e63212;border-radius:8px;padding:.7rem 1.5rem;text-decoration:none;font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;touch-action:manipulation}
-    .countdown{font-size:.75rem;opacity:.75;margin-top:.75rem}
-    /* ENTRIES */
-    .section-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:900;margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
-    .entry-card{background:#111;border:1px solid #1f1f1f;border-radius:12px;margin-bottom:.75rem;overflow:hidden;display:flex;align-items:stretch;gap:0}
-    .entry-rank{width:40px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;font-size:1rem;flex-shrink:0;color:#888}
-    .entry-rank.gold{color:#ffd700}
-    .entry-rank.silver{color:#c0c0c0}
-    .entry-rank.bronze{color:#cd7f32}
-    .entry-body{flex:1;padding:.85rem;min-width:0}
-    .entry-title{font-size:.85rem;font-weight:700;margin-bottom:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .entry-creator{color:#1db954;font-size:.75rem;margin-bottom:.3rem}
-    .entry-score{color:#888;font-size:.7rem}
-    .entry-score span{color:#e63212;font-weight:700}
-    /* PAST BATTLES */
-    .past-card{background:#111;border:1px solid #1f1f1f;border-radius:12px;padding:.85rem;margin-bottom:.75rem;cursor:pointer;touch-action:manipulation}
-    .past-card:active{background:#1a1a1a}
-    .past-date{font-size:.75rem;color:#888;margin-bottom:.35rem}
-    .past-prompt{font-size:.85rem;font-weight:700;margin-bottom:.35rem}
-    .past-winner{font-size:.75rem;color:#ffd700}
-    .past-entries{font-size:.7rem;color:#555;margin-top:.2rem}
-    /* NO PROMPT */
-    .no-prompt{text-align:center;padding:2rem 1rem;color:#888}
-    .no-prompt h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.5rem}
-    /* BOT NAV */
-    .bot-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;align-items:center;padding:.6rem 1rem env(safe-area-inset-bottom,.4rem);background:#0a0a0a;border-top:1px solid #1f1f1f}
-    .bot-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-decoration:none;color:rgba(255,255,255,.5);font-size:.55rem;touch-action:manipulation}
-    .bot-btn.active{color:#f5f5f5}
-    .bot-btn .bicon{font-size:1.3rem}
-    .loader{text-align:center;padding:2rem;color:#888;font-size:.8rem}
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100%;padding-bottom:80px}
+    .top-bar{display:flex;align-items:center;gap:10px;padding:env(safe-area-inset-top,10px) 16px 10px;border-bottom:1px solid rgba(255,255,255,.08);background:#000;position:sticky;top:0;z-index:10}
+    .top-back{background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+    .top-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:900;flex:1}
+    /* BATTLE CARD */
+    .battle-banner{background:linear-gradient(135deg,#fe2c55,#ff6b35,#fe2c55);padding:20px 16px;margin:12px 16px;border-radius:16px;text-align:center;position:relative;overflow:hidden}
+    .battle-banner::before{content:'⚔️';position:absolute;top:-20px;right:-10px;font-size:6rem;opacity:.15}
+    .battle-label{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.8);margin-bottom:6px}
+    .battle-prompt{font-family:'Syne',sans-serif;font-size:20px;font-weight:900;line-height:1.3;margin-bottom:12px}
+    .battle-countdown{font-size:13px;color:rgba(255,255,255,.85);margin-bottom:16px}
+    .battle-join-btn{background:#000;color:#fff;border:none;border-radius:24px;padding:10px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+    /* BATTLE ENTRIES */
+    .section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:900;padding:16px 16px 10px;display:flex;align-items:center;gap:8px}
+    .section-title .badge{background:#fe2c55;color:#fff;border-radius:12px;padding:2px 8px;font-size:11px}
+    /* LEADERBOARD */
+    .lb-card{margin:0 16px 8px;background:#111;border-radius:12px;overflow:hidden}
+    .lb-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;transition:background .15s}
+    .lb-item:last-child{border-bottom:none}
+    .lb-item:active{background:rgba(255,255,255,.05)}
+    .lb-rank{width:28px;font-family:'Syne',sans-serif;font-size:15px;font-weight:900;text-align:center;flex-shrink:0}
+    .lb-rank.gold{color:#ffd700}
+    .lb-rank.silver{color:#c0c0c0}
+    .lb-rank.bronze{color:#cd7f32}
+    .lb-av{width:44px;height:44px;border-radius:50%;background:#fe2c55;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex-shrink:0}
+    .lb-info{flex:1;min-width:0}
+    .lb-info h3{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .lb-info p{font-size:12px;color:#888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .lb-votes{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+    .lb-votes .vote-count{font-family:'Syne',sans-serif;font-size:15px;font-weight:900;color:#fe2c55}
+    .lb-votes .vote-bar-wrap{width:60px;height:4px;background:#222;border-radius:2px;overflow:hidden}
+    .lb-votes .vote-bar{height:100%;background:#fe2c55;border-radius:2px}
+    .vote-btn{background:#fe2c55;border:none;border-radius:8px;padding:6px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0}
+    .vote-btn.voted{background:#25f4ee;color:#000}
+    /* VIDEO GRID */
+    .battle-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:0 16px}
+    .bg-item{position:relative;aspect-ratio:9/16;background:#111;border-radius:8px;overflow:hidden;cursor:pointer}
+    .bg-item video,.bg-item .bg-thumb{width:100%;height:100%;object-fit:cover}
+    .bg-thumb{display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+    .bg-item::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to top,rgba(0,0,0,.7),transparent)}
+    .bg-meta{position:absolute;bottom:8px;left:8px;right:8px;z-index:1}
+    .bg-meta .bg-user{font-size:12px;font-weight:700}
+    .bg-meta .bg-votes{font-size:11px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:4px}
+    .bg-vote-btn{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    /* VS DIVIDER */
+    .vs-row{display:flex;align-items:center;gap:0;margin:0 16px 2px}
+    .vs-label{background:linear-gradient(135deg,#fe2c55,#ff6b35);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:900;z-index:1;position:absolute;left:50%;transform:translateX(-50%);top:50%;margin-top:-16px}
+    .empty{text-align:center;padding:40px;color:#555}
+    .empty h3{font-family:'Syne',sans-serif;margin-bottom:8px;color:#888}
+    /* SUBMIT ENTRY */
+    .submit-section{margin:16px;background:#111;border-radius:12px;padding:16px}
+    .submit-label{font-size:13px;color:#888;margin-bottom:10px}
+    .submit-input{width:100%;background:#1c1c1e;border:none;border-radius:8px;padding:10px 12px;color:#fff;font-size:14px;outline:none;margin-bottom:10px}
+    .submit-input:focus{outline:1px solid #fe2c55}
+    .submit-btn{width:100%;background:#fe2c55;border:none;border-radius:8px;padding:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+    /* BOTTOM NAV */
+    .bot-nav{position:fixed;bottom:0;left:0;right:0;z-index:20;display:flex;justify-content:space-around;align-items:center;padding:8px 0 env(safe-area-inset-bottom,8px);background:rgba(0,0,0,.95);border-top:1px solid rgba(255,255,255,.08)}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:rgba(255,255,255,.55);font-size:10px;min-width:48px}
+    .nav-item.active{color:#fff}
+    .nav-item svg{width:26px;height:26px}
+    .nav-plus-wrap{display:flex;align-items:center}
+    .nav-plus{background:#fff;border-radius:8px;width:42px;height:28px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;position:relative}
+    .nav-plus::before{content:'';position:absolute;left:-5px;top:0;bottom:0;width:6px;border-radius:4px 0 0 4px;background:#25f4ee}
+    .nav-plus::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:6px;border-radius:0 4px 4px 0;background:#fe2c55}
+    .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.12);backdrop-filter:blur(8px);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap;display:none}
+    .toast.show{display:block}
   </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <h1>⚔️ Daily Battles</h1>
-  <a href="feed.html">Watch</a>
+  <button class="top-back" onclick="history.back()">‹</button>
+  <span class="top-title">⚔️ Battles</span>
 </div>
 
-<div class="page">
-  <div id="todaySection"><div class="loader">Loading today's battle...</div></div>
-  <div id="leaderboard"></div>
-  <div class="section-title">📅 Past Battles</div>
-  <div id="pastBattles"><div class="loader">Loading...</div></div>
+<!-- TODAY'S PROMPT -->
+<div class="battle-banner" id="battleBanner">
+  <div class="battle-label">TODAY'S BATTLE</div>
+  <div class="battle-prompt" id="battlePrompt">Loading today's battle...</div>
+  <div class="battle-countdown" id="battleCountdown"></div>
+  <button class="battle-join-btn" onclick="openSubmit()">Enter Battle</button>
 </div>
 
-<div class="bot-bar">
-  <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
-  <a href="feed.html" class="bot-btn"><span class="bicon">😂</span><span>Watch</span></a>
-  <a href="upload.html" class="bot-btn"><span class="bicon">➕</span><span>Upload</span></a>
-  <a href="messages.html" class="bot-btn"><span class="bicon">💬</span><span>DMs</span></a>
-  <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Me</span></a>
+<!-- SUBMIT ENTRY -->
+<div class="submit-section" id="submitSection" style="display:none">
+  <div class="submit-label">Your YouTube link for this battle:</div>
+  <input class="submit-input" id="submitUrl" placeholder="https://youtube.com/watch?v=..." type="url"/>
+  <button class="submit-btn" onclick="submitEntry()">Submit Entry ⚔️</button>
 </div>
+
+<!-- LEADERBOARD -->
+<div class="section-title">Leaderboard <span class="badge">🏆</span></div>
+<div class="lb-card" id="leaderboard">
+  <div style="padding:24px;text-align:center;color:#555">Loading...</div>
+</div>
+
+<!-- TODAY'S ENTRIES -->
+<div class="section-title">Today's Entries</div>
+<div style="position:relative;margin:0 16px">
+  <div class="battle-grid" id="battleGrid">
+    <div style="grid-column:1/-1;padding:24px;text-align:center;color:#555">Loading entries...</div>
+  </div>
+</div>
+
+<nav class="bot-nav">
+  <a href="feed.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </a>
+  <a href="search.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span>Discover</span>
+  </a>
+  <a href="upload.html" class="nav-item">
+    <div class="nav-plus-wrap"><div class="nav-plus">+</div></div>
+  </a>
+  <a href="messages.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    <span>Inbox</span>
+  </a>
+  <a href="profile.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Me</span>
+  </a>
+</nav>
+<div class="toast" id="toast"></div>
 
 <script>
-const API='https://cheka-backend.onrender.com';
-const token=localStorage.getItem('cheka_token');
+const API = 'https://cheka-backend.onrender.com';
+const token = localStorage.getItem('cheka_token');
+const user = JSON.parse(localStorage.getItem('cheka_user') || '{}');
+if (!token) window.location.href = 'login.html';
 
-function timeUntilMidnight(){
-  const now=new Date();
-  const midnight=new Date();midnight.setUTCHours(24,0,0,0);
-  const diff=midnight-now;
-  const h=Math.floor(diff/3600000);
-  const m=Math.floor((diff%3600000)/60000);
-  return h+'h '+m+'m left today';
+const voted = new Set(JSON.parse(localStorage.getItem('cheka_voted') || '[]'));
+
+function openSubmit() {
+  const s = document.getElementById('submitSection');
+  s.style.display = s.style.display === 'none' ? 'block' : 'none';
+  if (s.style.display === 'block') s.scrollIntoView({ behavior: 'smooth' });
 }
 
-async function loadToday(){
-  try{
-    const res=await fetch(API+'/api/battles/today');
-    const data=await res.json();
-    const sec=document.getElementById('todaySection');
+async function loadBattle() {
+  try {
+    const res = await fetch(API + '/api/battles/today', { headers: { Authorization: 'Bearer ' + token } });
+    const data = await res.json();
+    document.getElementById('battlePrompt').textContent = data.prompt || '"Best Nairobi accent impression"';
+    // Countdown
+    if (data.endsAt) {
+      const update = () => {
+        const diff = new Date(data.endsAt) - Date.now();
+        if (diff <= 0) { document.getElementById('battleCountdown').textContent = 'Battle ended!'; return; }
+        const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000);
+        document.getElementById('battleCountdown').textContent = `⏰ Ends in ${h}h ${m}m`;
+      };
+      update(); setInterval(update, 60000);
+    }
+    loadEntries(data._id);
+  } catch {
+    document.getElementById('battlePrompt').textContent = '"Best Nairobi accent impression"';
+    document.getElementById('battleCountdown').textContent = '⏰ Resets in 12h';
+    loadEntries(null);
+  }
+}
 
-    if(!data.prompt){
-      sec.innerHTML=`<div class="no-prompt"><p style="font-size:2.5rem">😴</p><h2>No Battle Today</h2><p>Check back soon — daily prompts drop at midnight UTC</p></div>`;
-      document.getElementById('leaderboard').innerHTML='';
+async function loadEntries(battleId) {
+  try {
+    const url = battleId ? API + '/api/battles/' + battleId + '/entries' : API + '/api/battles/entries';
+    const res = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+    const entries = await res.json();
+    if (!entries.length) {
+      document.getElementById('battleGrid').innerHTML = '<div style="grid-column:1/-1;padding:32px;text-align:center;color:#555"><div style="font-size:2rem;margin-bottom:8px">⚔️</div>No entries yet — be the first!</div>';
+      document.getElementById('leaderboard').innerHTML = '<div style="padding:20px;text-align:center;color:#555">No entries yet</div>';
       return;
     }
-
-    sec.innerHTML=`
-      <div class="today-card">
-        <div class="today-label">Today's Prompt</div>
-        <div class="today-prompt">${data.prompt.text}</div>
-        <div class="today-meta">${data.totalEntries} entr${data.totalEntries===1?'y':'ies'} • ${timeUntilMidnight()}</div>
-        <a href="upload.html" class="enter-btn">➕ Enter Battle</a>
-      </div>
-    `;
-
-    if(data.entries&&data.entries.length){
-      const lb=document.getElementById('leaderboard');
-      lb.innerHTML=`<div class="section-title">🏆 Leaderboard</div>`+
-        data.entries.slice(0,20).map((e,i)=>`
-          <div class="entry-card">
-            <div class="entry-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</div>
-            <div class="entry-body">
-              <div class="entry-title">${e.title||'Untitled'}</div>
-              <div class="entry-creator">@${e.creatorName||'unknown'}</div>
-              <div class="entry-score">Score: <span>${e.score}</span> &nbsp;❤️ ${e.likes||0} &nbsp;👁 ${e.views||0}</div>
-            </div>
-          </div>
-        `).join('');
-    } else {
-      document.getElementById('leaderboard').innerHTML=`<div class="section-title">🏆 Leaderboard</div><div class="no-prompt"><p style="font-size:2rem">🎬</p><h2>No entries yet!</h2><p>Be the first to enter today's battle</p></div>`;
-    }
-  }catch(e){
-    document.getElementById('todaySection').innerHTML='<div class="loader">Could not load battle</div>';
-  }
-}
-
-async function loadPast(){
-  try{
-    const res=await fetch(API+'/api/battles');
-    const data=await res.json();
-    const box=document.getElementById('pastBattles');
-    if(!data||!data.length){box.innerHTML='<div class="loader">No past battles yet</div>';return;}
-    box.innerHTML=data.map(b=>`
-      <div class="past-card">
-        <div class="past-date">📅 ${b.date}</div>
-        <div class="past-prompt">${b.prompt?.text||'No prompt'}</div>
-        ${b.winner?`<div class="past-winner">🏆 Winner: @${b.winner.creatorName} — "${b.winner.title}" (❤️ ${b.winner.likes})</div>`:''}
-        <div class="past-entries">${b.entries} entr${b.entries===1?'y':'ies'}</div>
+    const sorted = [...entries].sort((a, b) => (b.votes || 0) - (a.votes || 0));
+    const max = sorted[0]?.votes || 1;
+    // Leaderboard
+    const rankColors = ['gold', 'silver', 'bronze'];
+    document.getElementById('leaderboard').innerHTML = sorted.slice(0, 10).map((e, i) => `
+      <div class="lb-item">
+        <div class="lb-rank ${rankColors[i] || ''}">${i < 3 ? ['🥇', '🥈', '🥉'][i] : (i + 1)}</div>
+        <div class="lb-av">${(e.username || 'U')[0].toUpperCase()}</div>
+        <div class="lb-info">
+          <h3>@${e.username || 'creator'}</h3>
+          <p>${e.description || ''}</p>
+        </div>
+        <div class="lb-votes">
+          <div class="vote-count">${fmtNum(e.votes || 0)}</div>
+          <div class="vote-bar-wrap"><div class="vote-bar" style="width:${Math.round(((e.votes||0)/max)*100)}%"></div></div>
+        </div>
+        <button class="vote-btn ${voted.has(e._id) ? 'voted' : ''}" onclick="voteEntry('${e._id}',this)">
+          ${voted.has(e._id) ? '✓' : '♡ Vote'}
+        </button>
       </div>
     `).join('');
-  }catch{
-    document.getElementById('pastBattles').innerHTML='<div class="loader">Could not load past battles</div>';
+    // Grid
+    document.getElementById('battleGrid').innerHTML = entries.slice(0, 6).map(e => `
+      <div class="bg-item" onclick="window.open('https://youtube.com/watch?v=${e.youtubeId || ''}','_blank')">
+        <div class="bg-thumb">😂</div>
+        <button class="bg-vote-btn ${voted.has(e._id) ? 'voted' : ''}" onclick="event.stopPropagation();voteEntry('${e._id}',this)">${voted.has(e._id) ? '✅' : '♡'}</button>
+        <div class="bg-meta">
+          <div class="bg-user">@${e.username || 'creator'}</div>
+          <div class="bg-votes">❤️ ${fmtNum(e.votes || 0)} votes</div>
+        </div>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('battleGrid').innerHTML = '<div style="grid-column:1/-1;padding:24px;text-align:center;color:#555">Could not load entries</div>';
   }
 }
 
-loadToday();
-loadPast();
+async function voteEntry(entryId, btn) {
+  if (voted.has(entryId)) { toast('Already voted!'); return; }
+  try {
+    await fetch(API + '/api/battles/entries/' + entryId + '/vote', { method: 'POST', headers: { Authorization: 'Bearer ' + token } });
+    voted.add(entryId);
+    localStorage.setItem('cheka_voted', JSON.stringify([...voted]));
+    btn.textContent = '✓'; btn.classList.add('voted');
+    toast('Vote cast! 🎉');
+    loadBattle();
+  } catch { toast('Could not vote'); }
+}
+
+async function submitEntry() {
+  const url = document.getElementById('submitUrl').value.trim();
+  const match = url.match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{11})/);
+  if (!match) { toast('Paste a valid YouTube link'); return; }
+  try {
+    await fetch(API + '/api/battles/enter', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ youtubeId: match[1], username: user.username }) });
+    toast('Entry submitted! ⚔️');
+    document.getElementById('submitSection').style.display = 'none';
+    loadBattle();
+  } catch { toast('Could not submit'); }
+}
+
+function fmtNum(n) { if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return n; }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+
+loadBattle();
 </script>
 </body>
 </html>

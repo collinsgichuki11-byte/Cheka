@@ -3,217 +3,84 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Join Cheka — Sign Up</title>
-  <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
-  <style>
-    .auth-container {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-    }
-    .auth-box {
-      background: #111;
-      border: 1px solid #2a2a2a;
-      border-radius: 16px;
-      padding: 2.5rem;
-      width: 100%;
-      max-width: 420px;
-    }
-    .auth-logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 900;
-      margin-bottom: 2rem;
-      display: block;
-      text-decoration: none;
-      color: #f5f5f5;
-    }
-    .auth-box h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 900;
-      margin-bottom: 0.5rem;
-    }
-    .auth-box p {
-      color: #888;
-      font-size: 0.85rem;
-      margin-bottom: 2rem;
-    }
-    .form-group {
-      margin-bottom: 1.2rem;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      color: #888;
-      margin-bottom: 0.4rem;
-    }
-    .form-group input {
-      width: 100%;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      padding: 0.85rem 1rem;
-      color: #f5f5f5;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.85rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .form-group input:focus {
-      border-color: #e63212;
-    }
-    .auth-btn {
-      width: 100%;
-      background: #e63212;
-      color: #f5f5f5;
-      border: none;
-      border-radius: 8px;
-      padding: 0.9rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.9rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: opacity 0.2s;
-    }
-    .auth-btn:hover { opacity: 0.85; }
-    .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .auth-switch {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 0.8rem;
-      color: #888;
-    }
-    .auth-switch a {
-      color: #e63212;
-      text-decoration: none;
-    }
-    .error-msg {
-      background: rgba(230,50,18,0.1);
-      border: 1px solid rgba(230,50,18,0.3);
-      color: #e63212;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      margin-bottom: 1rem;
-      display: none;
-    }
-    .success-msg {
-      background: rgba(29,185,84,0.1);
-      border: 1px solid rgba(29,185,84,0.3);
-      color: #1db954;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      margin-bottom: 1rem;
-      display: none;
-    }
-  </style>
+  <title>Sign Up — Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
   <link rel="manifest" href="/manifest.json"/>
-  <meta name="theme-color" content="#e63212"/>
+  <meta name="theme-color" content="#fe2c55"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-  <meta name="apple-mobile-web-app-title" content="Cheka"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100%}
+    .page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top,0) 24px env(safe-area-inset-bottom,0)}
+    .logo-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 0 16px}
+    .logo{font-family:'Syne',sans-serif;font-size:3rem;font-weight:900;margin-bottom:8px;text-align:center}
+    .logo-sub{font-size:14px;color:#888;text-align:center}
+    .form-area{width:100%;max-width:400px;padding-bottom:32px}
+    .form-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:900;margin-bottom:6px;text-align:center}
+    .form-sub{font-size:13px;color:#888;text-align:center;margin-bottom:24px}
+    .field{width:100%;background:#1c1c1e;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;color:#fff;font-size:15px;outline:none;margin-bottom:12px;transition:border-color .2s}
+    .field:focus{border-color:#fe2c55}
+    .field::placeholder{color:#555}
+    .submit-btn{width:100%;background:#fe2c55;border:none;border-radius:10px;padding:15px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;transition:opacity .2s;font-family:'Syne',sans-serif}
+    .submit-btn:disabled{opacity:.5;cursor:not-allowed}
+    .switch-link{text-align:center;margin-top:20px;font-size:13px;color:#888}
+    .switch-link a{color:#fe2c55;text-decoration:none;font-weight:600}
+    .error-box{background:rgba(254,44,85,.1);border:1px solid rgba(254,44,85,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:#fe2c55;margin-bottom:12px;display:none}
+    .error-box.show{display:block}
+    .success-box{background:rgba(29,185,84,.1);border:1px solid rgba(29,185,84,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:#1db954;margin-bottom:12px;display:none}
+    .success-box.show{display:block}
+    .terms{font-size:11px;color:#555;text-align:center;margin-top:16px;line-height:1.5}
+    .terms a{color:#888}
+  </style>
 </head>
 <body>
-  <div class="auth-container">
-    <div class="auth-box">
-      <a href="index.html" class="auth-logo">😂 Cheka</a>
-      <h1>Join Cheka</h1>
-      <p>Create your free account and start laughing</p>
-      <div class="error-msg" id="errorMsg"></div>
-      <div class="success-msg" id="successMsg"></div>
-      <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="username" placeholder="e.g. NairobiVibes"/>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="email" placeholder="your@email.com"/>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="min 6 characters"/>
-      </div>
-      <button class="auth-btn" id="signupBtn" onclick="signup()">Create Account</button>
-      <div class="auth-switch">
-        Already have an account? <a href="login.html">Log in</a>
-      </div>
-    </div>
+<div class="page">
+  <div class="logo-area">
+    <div class="logo">😂 Cheka</div>
+    <div class="logo-sub">Join Kenya's funniest platform</div>
   </div>
-  <script>
-    const API = 'https://cheka-backend.onrender.com';
-
-    async function signup() {
-      const username = document.getElementById('username').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const btn = document.getElementById('signupBtn');
-      const errorMsg = document.getElementById('errorMsg');
-      const successMsg = document.getElementById('successMsg');
-
-      errorMsg.style.display = 'none';
-      successMsg.style.display = 'none';
-
-      if (!username || !email || !password) {
-        errorMsg.textContent = 'Please fill in all fields';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      if (password.length < 6) {
-        errorMsg.textContent = 'Password must be at least 6 characters';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Creating account...';
-
-      try {
-        const res = await fetch(`${API}/api/auth/signup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          errorMsg.textContent = data.msg || 'Something went wrong';
-          errorMsg.style.display = 'block';
-          btn.disabled = false;
-          btn.textContent = 'Create Account';
-          return;
-        }
-
-        localStorage.setItem('cheka_token', data.token);
-        localStorage.setItem('cheka_user', JSON.stringify(data.user));
-
-        successMsg.textContent = 'Account created! Redirecting...';
-        successMsg.style.display = 'block';
-
-        setTimeout(() => { window.location.href = 'index.html'; }, 1500);
-
-      } catch (err) {
-        errorMsg.textContent = 'Cannot connect to server. Try again.';
-        errorMsg.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Create Account';
-      }
-    }
-  </script>
+  <div class="form-area">
+    <div class="form-title">Sign up</div>
+    <div class="form-sub">Create your account, it's free</div>
+    <div class="error-box" id="errorBox"></div>
+    <div class="success-box" id="successBox"></div>
+    <input class="field" id="username" type="text" placeholder="Username" autocomplete="username" maxlength="30"/>
+    <input class="field" id="email" type="email" placeholder="Email" autocomplete="email"/>
+    <input class="field" id="password" type="password" placeholder="Password (min 6 chars)" autocomplete="new-password"/>
+    <button class="submit-btn" id="signupBtn" onclick="signup()">Create account</button>
+    <div class="terms">By signing up you agree to Cheka's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></div>
+    <div class="switch-link">Already have an account? <a href="login.html">Log in</a></div>
+  </div>
+</div>
 <script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js')
-    .then(()=>console.log('SW registered'))
-    .catch(e=>console.log('SW error',e));
+const API = 'https://cheka-backend.onrender.com';
+document.querySelectorAll('.field').forEach(f => {
+  f.addEventListener('keydown', e => { if (e.key === 'Enter') signup(); });
+});
+async function signup() {
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const btn = document.getElementById('signupBtn');
+  const err = document.getElementById('errorBox');
+  const suc = document.getElementById('successBox');
+  err.classList.remove('show'); suc.classList.remove('show');
+  if (!username || !email || !password) { err.textContent = 'Fill in all fields'; err.classList.add('show'); return; }
+  if (password.length < 6) { err.textContent = 'Password must be at least 6 characters'; err.classList.add('show'); return; }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) { err.textContent = 'Username can only contain letters, numbers and underscores'; err.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = 'Creating account...';
+  try {
+    const res = await fetch(API + '/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
+    const data = await res.json();
+    if (!res.ok) { err.textContent = data.msg || 'Something went wrong'; err.classList.add('show'); btn.disabled = false; btn.textContent = 'Create account'; return; }
+    localStorage.setItem('cheka_token', data.token);
+    localStorage.setItem('cheka_user', JSON.stringify(data.user));
+    suc.textContent = 'Account created! Let\'s go 🎉'; suc.classList.add('show');
+    setTimeout(() => window.location.href = 'feed.html', 1200);
+  } catch { err.textContent = 'Cannot connect to server'; err.classList.add('show'); btn.disabled = false; btn.textContent = 'Create account'; }
 }
+if (localStorage.getItem('cheka_token')) window.location.href = 'feed.html';
 </script>
 </body>
 </html>

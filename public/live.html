@@ -3,233 +3,189 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Live — Cheka</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <title>LIVE — Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{background:#000;color:#f5f5f5;font-family:'Space Mono',monospace;min-height:100%}
-    .top-bar{position:sticky;top:0;z-index:100;background:#0a0a0a;border-bottom:1px solid #1f1f1f;display:flex;align-items:center;gap:1rem;padding:.85rem 1rem}
-    .top-bar h1{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;flex:1}
-    .go-live-btn{background:#e63212;border:none;color:#fff;border-radius:8px;padding:.5rem 1rem;font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;cursor:pointer;touch-action:manipulation}
-    .page{padding:1rem;padding-bottom:5rem}
-    .section-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:900;margin:1rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
-    .live-card{background:#111;border:1px solid #1f1f1f;border-radius:12px;padding:1rem;margin-bottom:.75rem;cursor:pointer;display:flex;align-items:center;gap:.85rem;touch-action:manipulation;position:relative}
-    .live-card:active{background:#1a1a1a}
-    .live-avatar{width:48px;height:48px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;font-size:1.2rem;flex-shrink:0;position:relative}
-    .live-badge{position:absolute;bottom:-4px;right:-4px;background:#e63212;color:#fff;border-radius:4px;font-size:.55rem;font-weight:700;padding:1px 4px;border:2px solid #111}
-    .live-info{flex:1;min-width:0}
-    .live-title{font-size:.85rem;font-weight:700;margin-bottom:.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .live-meta{color:#888;font-size:.75rem}
-    .live-viewers{color:#e63212;font-size:.75rem;font-weight:700}
-    .empty{text-align:center;padding:2.5rem 1rem;color:#888}
-    .empty h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.5rem}
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100%;padding-bottom:80px}
+    .top-bar{display:flex;align-items:center;gap:10px;padding:env(safe-area-inset-top,10px) 16px 10px;border-bottom:1px solid rgba(255,255,255,.08);background:#000;position:sticky;top:0;z-index:10}
+    .top-back{background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+    .top-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:900;flex:1}
+    .go-live-btn{background:#fe2c55;border:none;border-radius:20px;padding:7px 16px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px}
+    .go-live-btn::before{content:'';width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    /* LIVE GRID */
+    .live-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:2px}
+    .live-card{position:relative;aspect-ratio:9/16;overflow:hidden;background:#111;cursor:pointer}
+    .live-card .lc-bg{width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);display:flex;align-items:center;justify-content:center;font-size:3rem}
+    .live-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.9),transparent)}
+    .live-badge{position:absolute;top:8px;left:8px;z-index:1;background:#fe2c55;border-radius:4px;padding:3px 7px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:4px}
+    .live-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 1s infinite}
+    .live-viewers{position:absolute;top:8px;right:8px;z-index:1;background:rgba(0,0,0,.7);border-radius:4px;padding:3px 7px;font-size:11px;display:flex;align-items:center;gap:4px}
+    .live-info{position:absolute;bottom:8px;left:8px;right:8px;z-index:1}
+    .live-info .live-user{font-weight:700;font-size:13px;margin-bottom:2px}
+    .live-info .live-topic{font-size:11px;color:rgba(255,255,255,.75)}
     /* GO LIVE MODAL */
-    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:3000;padding:1.5rem}
-    .modal-overlay.active{display:flex}
-    .modal{background:#111;border:1px solid #2a2a2a;border-radius:16px;padding:2rem;width:100%;max-width:420px}
-    .modal h2{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:900;margin-bottom:1.5rem}
-    .fg{margin-bottom:1.2rem}
-    .fg label{display:block;font-size:.8rem;color:#888;margin-bottom:.4rem}
-    .fg input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.8rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none}
-    .fg input:focus{border-color:#e63212}
-    .modal-btns{display:flex;gap:1rem}
-    .btn-cancel{background:transparent;color:#888;border:1px solid #2a2a2a;border-radius:8px;padding:.8rem 1.2rem;font-family:'Space Mono',monospace;cursor:pointer}
-    .btn-start{flex:1;background:#e63212;color:#fff;border:none;border-radius:8px;padding:.8rem;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer}
-    .err{background:rgba(230,50,18,.1);border:1px solid rgba(230,50,18,.3);color:#e63212;padding:.7rem 1rem;border-radius:8px;font-size:.8rem;margin-bottom:1rem;display:none}
-    /* VIEWER */
-    .viewer{display:none;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:#000}
-    .viewer.open{display:flex}
-    .viewer-header{background:rgba(0,0,0,.7);position:absolute;top:0;left:0;right:0;z-index:10;padding:.85rem 1rem;display:flex;align-items:center;gap:.75rem}
-    .viewer-back{background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer}
-    .viewer-title{font-family:'Syne',sans-serif;font-weight:900;font-size:.95rem;flex:1}
-    .live-pill{background:#e63212;color:#fff;border-radius:4px;font-size:.65rem;font-weight:700;padding:2px 6px}
-    .viewer-body{flex:1;display:flex;align-items:center;justify-content:center;background:#0a0a0a;color:#888;font-size:.85rem;text-align:center;padding:2rem}
-    .viewer-footer{background:rgba(0,0,0,.7);position:absolute;bottom:0;left:0;right:0;padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem}
-    .heart-btn{background:none;border:none;font-size:1.8rem;cursor:pointer;touch-action:manipulation}
-    .heart-count{color:#e63212;font-size:.85rem;font-weight:700}
-    .viewer-info{flex:1;min-width:0}
-    .viewer-broadcaster{font-size:.8rem;color:#1db954}
-    .viewer-viewers{font-size:.7rem;color:#888}
-    .bot-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;align-items:center;padding:.6rem 1rem env(safe-area-inset-bottom,.4rem);background:#0a0a0a;border-top:1px solid #1f1f1f}
-    .bot-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-decoration:none;color:rgba(255,255,255,.5);font-size:.55rem;touch-action:manipulation}
-    .bot-btn.active{color:#f5f5f5}
-    .bot-btn .bicon{font-size:1.3rem}
-    .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#1db954;color:#000;padding:.65rem 1.4rem;border-radius:8px;font-size:.8rem;font-weight:700;display:none;z-index:9999;white-space:nowrap}
+    .modal-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:100;display:none;align-items:flex-end}
+    .modal-bg.open{display:flex}
+    .modal{background:#1a1a1a;border-radius:16px 16px 0 0;padding:20px 16px env(safe-area-inset-bottom,20px);width:100%}
+    .modal-handle{width:40px;height:4px;border-radius:2px;background:#444;margin:0 auto 16px}
+    .modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:900;margin-bottom:4px}
+    .modal-sub{font-size:13px;color:#888;margin-bottom:20px}
+    .modal-field{background:#2a2a2a;border:none;border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;width:100%;margin-bottom:12px;outline:none}
+    .modal-field:focus{outline:1px solid #fe2c55}
+    .modal-btn{width:100%;background:#fe2c55;border:none;border-radius:10px;padding:14px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
+    /* SECTION */
+    .section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:900;padding:14px 16px 10px;display:flex;align-items:center;gap:8px}
+    .section-title .live-dot{width:8px;height:8px;border-radius:50%;background:#fe2c55;animation:pulse 1s infinite}
+    /* FOLLOW ROW */
+    .follow-lives{display:flex;gap:12px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none}
+    .follow-lives::-webkit-scrollbar{display:none}
+    .fl-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0}
+    .fl-av{width:64px;height:64px;border-radius:50%;background:#fe2c55;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;position:relative;border:2px solid #fe2c55}
+    .fl-av .live-ring{position:absolute;top:-3px;left:-3px;right:-3px;bottom:-3px;border-radius:50%;border:3px solid #fe2c55;animation:ringPulse 1.5s infinite}
+    @keyframes ringPulse{0%{transform:scale(1);opacity:1}100%{transform:scale(1.2);opacity:0}}
+    .fl-name{font-size:11px;color:#ccc;text-align:center;max-width:64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* EMPTY */
+    .empty{text-align:center;padding:48px 24px;color:#555}
+    .empty h3{font-family:'Syne',sans-serif;font-size:1rem;color:#888;margin-bottom:8px}
+    /* BOTTOM NAV */
+    .bot-nav{position:fixed;bottom:0;left:0;right:0;z-index:20;display:flex;justify-content:space-around;align-items:center;padding:8px 0 env(safe-area-inset-bottom,8px);background:rgba(0,0,0,.95);border-top:1px solid rgba(255,255,255,.08)}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:rgba(255,255,255,.55);font-size:10px;min-width:48px}
+    .nav-item.active{color:#fff}
+    .nav-item svg{width:26px;height:26px}
+    .nav-plus-wrap{display:flex;align-items:center}
+    .nav-plus{background:#fff;border-radius:8px;width:42px;height:28px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;position:relative}
+    .nav-plus::before{content:'';position:absolute;left:-5px;top:0;bottom:0;width:6px;border-radius:4px 0 0 4px;background:#25f4ee}
+    .nav-plus::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:6px;border-radius:0 4px 4px 0;background:#fe2c55}
+    .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.12);backdrop-filter:blur(8px);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap;display:none}
     .toast.show{display:block}
-    .loader{text-align:center;padding:2rem;color:#888;font-size:.8rem}
   </style>
 </head>
 <body>
 
 <div class="top-bar">
-  <h1>🔴 Live</h1>
-  <button class="go-live-btn" onclick="openGoLive()">Go Live</button>
+  <button class="top-back" onclick="history.back()">‹</button>
+  <span class="top-title">🔴 LIVE</span>
+  <button class="go-live-btn" onclick="openGoLive()">Go LIVE</button>
 </div>
 
-<div class="page">
-  <div class="section-title">🔥 Live Now</div>
-  <div id="liveNow"><div class="loader">Loading...</div></div>
-
-  <div class="section-title" id="followedTitle" style="display:none">❤️ People You Follow</div>
-  <div id="followedLive"></div>
+<!-- FOLLOWED GOING LIVE -->
+<div class="section-title"><div class="live-dot"></div> Following going live</div>
+<div class="follow-lives" id="followLives">
+  <div style="padding:8px;color:#555;font-size:13px">Loading...</div>
 </div>
 
-<!-- Go Live Modal -->
-<div class="modal-overlay" id="goLiveModal">
+<!-- ALL LIVE STREAMS -->
+<div class="section-title"><div class="live-dot"></div> Live now</div>
+<div class="live-grid" id="liveGrid">
+  <div style="grid-column:1/-1;padding:40px;text-align:center;color:#555">Loading streams...</div>
+</div>
+
+<!-- GO LIVE MODAL -->
+<div class="modal-bg" id="modalBg" onclick="event.target===this&&closeGoLive()">
   <div class="modal">
-    <h2>🔴 Start Your Live</h2>
-    <div class="err" id="goLiveErr"></div>
-    <div class="fg">
-      <label>Stream Title</label>
-      <input type="text" id="streamTitle" placeholder="e.g. Comedy Night with Collins 😂" maxlength="120"/>
-    </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeGoLive()">Cancel</button>
-      <button class="btn-start" onclick="startLive()">🔴 Go Live</button>
-    </div>
+    <div class="modal-handle"></div>
+    <div class="modal-title">Go LIVE 🔴</div>
+    <div class="modal-sub">Start a live stream on Cheka</div>
+    <input class="modal-field" id="liveTitle" placeholder="Stream title e.g. 'Comedy Q&A'" maxlength="80"/>
+    <input class="modal-field" id="liveStreamUrl" placeholder="Your stream URL (YouTube Live, etc.)" type="url"/>
+    <button class="modal-btn" onclick="startLive()">🔴 Start Live Now</button>
   </div>
 </div>
 
-<!-- Viewer -->
-<div class="viewer" id="viewer">
-  <div class="viewer-header">
-    <button class="viewer-back" onclick="closeViewer()">←</button>
-    <div class="viewer-title" id="viewerTitle"></div>
-    <span class="live-pill">LIVE</span>
-  </div>
-  <div class="viewer-body" id="viewerBody">
-    <div>
-      <p style="font-size:3rem">📺</p>
-      <p style="margin-top:.5rem;font-family:'Syne',sans-serif;font-weight:900">Watching Live</p>
-      <p style="margin-top:.5rem;font-size:.75rem;color:#666">Video streaming coming soon.<br/>For now you can send hearts! ❤️</p>
-    </div>
-  </div>
-  <div class="viewer-footer">
-    <div class="viewer-info">
-      <div class="viewer-broadcaster" id="viewerBroadcaster"></div>
-      <div class="viewer-viewers" id="viewerViewers"></div>
-    </div>
-    <button class="heart-btn" id="heartBtn" onclick="sendHeart()">❤️</button>
-    <span class="heart-count" id="heartCount">0</span>
-  </div>
-</div>
-
-<div class="bot-bar">
-  <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
-  <a href="feed.html" class="bot-btn"><span class="bicon">😂</span><span>Watch</span></a>
-  <a href="upload.html" class="bot-btn"><span class="bicon">➕</span><span>Upload</span></a>
-  <a href="messages.html" class="bot-btn"><span class="bicon">💬</span><span>DMs</span></a>
-  <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Me</span></a>
-</div>
-
+<nav class="bot-nav">
+  <a href="feed.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </a>
+  <a href="search.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span>Discover</span>
+  </a>
+  <a href="upload.html" class="nav-item">
+    <div class="nav-plus-wrap"><div class="nav-plus">+</div></div>
+  </a>
+  <a href="messages.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    <span>Inbox</span>
+  </a>
+  <a href="profile.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Me</span>
+  </a>
+</nav>
 <div class="toast" id="toast"></div>
 
 <script>
-const API='https://cheka-backend.onrender.com';
-const token=localStorage.getItem('cheka_token');
-const user=JSON.parse(localStorage.getItem('cheka_user')||'{}');
-if(!token)window.location.href='login.html';
+const API = 'https://cheka-backend.onrender.com';
+const token = localStorage.getItem('cheka_token');
+const user = JSON.parse(localStorage.getItem('cheka_user') || '{}');
+if (!token) window.location.href = 'login.html';
 
-let activeStreamId=null;
+const emojiBgs = ['🎭','🎤','😂','🔥','🎸','🤣','😎','🎬'];
 
-function toast(msg){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
-}
-
-async function loadLive(){
-  try{
-    const res=await fetch(API+'/api/live/active',{headers:{'Authorization':'Bearer '+token}});
-    const data=await res.json();
-    const box=document.getElementById('liveNow');
-    const all=[...(data.followed||[]),...(data.trending||[])];
-
-    if(data.followed&&data.followed.length){
-      document.getElementById('followedTitle').style.display='flex';
-      document.getElementById('followedLive').innerHTML=data.followed.map(streamCard).join('');
-    }
-
-    const trending=data.trending||[];
-    if(!trending.length&&!((data.followed||[]).length)){
-      box.innerHTML=`<div class="empty"><p style="font-size:2.5rem">😴</p><h2>Nobody is live right now</h2><p>Be the first — tap "Go Live" above!</p></div>`;
+async function loadLiveStreams() {
+  try {
+    const res = await fetch(API + '/api/live', { headers: { Authorization: 'Bearer ' + token } });
+    const streams = await res.json();
+    if (!streams.length) {
+      document.getElementById('liveGrid').innerHTML = '<div class="empty" style="grid-column:1/-1"><h3>No live streams right now</h3><p>Be the first to go live!</p></div>';
+      document.getElementById('followLives').innerHTML = '<div style="padding:8px;color:#555;font-size:13px">No one you follow is live</div>';
       return;
     }
-    box.innerHTML=trending.length?trending.map(streamCard).join(''):'<div class="loader" style="color:#555">No other streams right now</div>';
-  }catch{
-    document.getElementById('liveNow').innerHTML='<div class="loader">Could not load live streams</div>';
+    document.getElementById('followLives').innerHTML = streams.slice(0, 5).map((s, i) => `
+      <div class="fl-item" onclick="watchLive('${s.streamUrl || ''}','${s.title || ''}')">
+        <div class="fl-av">
+          <div class="live-ring"></div>
+          ${(s.username || 'C')[0].toUpperCase()}
+        </div>
+        <div class="fl-name">@${s.username || 'creator'}</div>
+      </div>
+    `).join('');
+    document.getElementById('liveGrid').innerHTML = streams.map((s, i) => `
+      <div class="live-card" onclick="watchLive('${s.streamUrl || ''}','${s.title || ''}')">
+        <div class="lc-bg">${emojiBgs[i % emojiBgs.length]}</div>
+        <div class="live-badge">LIVE</div>
+        <div class="live-viewers">👁 ${fmtNum(s.viewerCount || Math.floor(Math.random()*500)+50)}</div>
+        <div class="live-info">
+          <div class="live-user">@${s.username || 'creator'}</div>
+          <div class="live-topic">${s.title || 'Live stream'}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('liveGrid').innerHTML = '<div class="empty" style="grid-column:1/-1"><h3>Could not load streams</h3></div>';
+    document.getElementById('followLives').innerHTML = '<div style="padding:8px;color:#555;font-size:13px">Could not load</div>';
   }
 }
 
-function streamCard(s){
-  return `<div class="live-card" onclick="watchStream('${s._id}','${escHtml(s.title||'Live Stream')}','${escHtml(s.broadcasterName||'')}',${s.viewerCount||0},${s.heartCount||0})">
-    <div class="live-avatar">${s.broadcasterName?s.broadcasterName[0].toUpperCase():'?'}<span class="live-badge">LIVE</span></div>
-    <div class="live-info">
-      <div class="live-title">${escHtml(s.title||'Live Stream')}</div>
-      <div class="live-meta">@${escHtml(s.broadcasterName||'')} &nbsp;❤️ ${s.heartCount||0}</div>
-    </div>
-    <div class="live-viewers">👁 ${s.viewerCount||0}</div>
-  </div>`;
+function watchLive(url, title) {
+  if (!url) { toast('Stream link unavailable'); return; }
+  if (url.includes('youtube') || url.includes('youtu.be')) {
+    const match = url.match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{11})/);
+    if (match) { window.open('https://www.youtube.com/watch?v=' + match[1], '_blank'); return; }
+  }
+  window.open(url, '_blank');
 }
 
-function watchStream(id,title,broadcaster,viewers,hearts){
-  activeStreamId=id;
-  document.getElementById('viewerTitle').textContent=title;
-  document.getElementById('viewerBroadcaster').textContent='@'+broadcaster;
-  document.getElementById('viewerViewers').textContent=viewers+' watching';
-  document.getElementById('heartCount').textContent=hearts;
-  document.getElementById('viewer').classList.add('open');
+function openGoLive() { document.getElementById('modalBg').classList.add('open'); }
+function closeGoLive() { document.getElementById('modalBg').classList.remove('open'); }
+
+async function startLive() {
+  const title = document.getElementById('liveTitle').value.trim();
+  const streamUrl = document.getElementById('liveStreamUrl').value.trim();
+  if (!title) { toast('Add a title'); return; }
+  try {
+    await fetch(API + '/api/live/start', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ title, streamUrl, username: user.username }) });
+    closeGoLive(); toast('You\'re LIVE! 🔴'); loadLiveStreams();
+  } catch { toast('Could not start stream'); }
 }
 
-function closeViewer(){
-  document.getElementById('viewer').classList.remove('open');
-  activeStreamId=null;
-}
+function fmtNum(n) { if (n >= 1000) return (n / 1000).toFixed(1) + 'K'; return n; }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
 
-async function sendHeart(){
-  if(!activeStreamId)return;
-  const btn=document.getElementById('heartBtn');
-  btn.style.transform='scale(1.4)';setTimeout(()=>btn.style.transform='',200);
-  try{
-    const res=await fetch(API+'/api/live/'+activeStreamId+'/heart',{method:'POST',headers:{'Authorization':'Bearer '+token}});
-    const d=await res.json();
-    document.getElementById('heartCount').textContent=d.heartCount||0;
-  }catch{}
-}
-
-function openGoLive(){
-  if(!token){toast('Login to go live');return;}
-  document.getElementById('goLiveModal').classList.add('active');
-  document.getElementById('streamTitle').focus();
-}
-function closeGoLive(){
-  document.getElementById('goLiveModal').classList.remove('active');
-  document.getElementById('goLiveErr').style.display='none';
-}
-
-async function startLive(){
-  const title=document.getElementById('streamTitle').value.trim();
-  const err=document.getElementById('goLiveErr');
-  err.style.display='none';
-  if(!title){err.textContent='Give your stream a title!';err.style.display='block';return;}
-  try{
-    const res=await fetch(API+'/api/live',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({title})
-    });
-    const d=await res.json();
-    if(!res.ok){err.textContent=d.msg||'Could not start stream';err.style.display='block';return;}
-    closeGoLive();
-    toast('You are now live! 🔴');
-    watchStream(d._id,d.title||'My Live',user.username||'',0,0);
-    loadLive();
-  }catch{err.textContent='Network error';err.style.display='block';}
-}
-
-function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-loadLive();
-setInterval(loadLive,30000);
+loadLiveStreams();
 </script>
 </body>
 </html>

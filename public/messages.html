@@ -3,266 +3,307 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>Messages — Cheka</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <title>Inbox — Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{height:100%;background:#000;color:#f5f5f5;font-family:'Space Mono',monospace}
-    .top-bar{position:fixed;top:0;left:0;right:0;z-index:100;background:#0a0a0a;border-bottom:1px solid #1f1f1f;display:flex;align-items:center;gap:1rem;padding:.85rem 1rem}
-    .top-bar h1{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;flex:1}
-    .top-bar button{background:none;border:none;color:#f5f5f5;font-size:1.3rem;cursor:pointer;padding:.25rem}
-    .search-bar{position:fixed;top:3.5rem;left:0;right:0;z-index:99;background:#0a0a0a;padding:.6rem 1rem;border-bottom:1px solid #1f1f1f}
-    .search-input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.6rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none}
-    .search-input:focus{border-color:#e63212}
-    .search-results{position:absolute;top:100%;left:1rem;right:1rem;background:#111;border:1px solid #2a2a2a;border-radius:8px;max-height:200px;overflow-y:auto;z-index:200}
-    .search-item{padding:.75rem 1rem;cursor:pointer;border-bottom:1px solid #1f1f1f;font-size:.85rem}
-    .search-item:hover{background:#1a1a1a}
-    .search-item:last-child{border-bottom:none}
-    .inbox{margin-top:7.5rem;padding-bottom:5rem}
-    .convo{display:flex;align-items:center;gap:.85rem;padding:1rem;border-bottom:1px solid #1a1a1a;cursor:pointer;touch-action:manipulation}
-    .convo:active{background:#111}
-    .convo-avatar{width:48px;height:48px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;font-size:1.2rem;flex-shrink:0}
-    .convo-body{flex:1;min-width:0}
-    .convo-name{font-size:.9rem;font-weight:700;margin-bottom:.2rem;display:flex;align-items:center;gap:.4rem}
-    .convo-preview{color:#888;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .convo-time{color:#555;font-size:.65rem;flex-shrink:0}
-    .unread-dot{width:8px;height:8px;border-radius:50%;background:#e63212;flex-shrink:0}
-    .empty{text-align:center;padding:3rem 1rem;color:#888}
-    .empty h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.5rem}
-    /* THREAD */
-    .thread{display:none;flex-direction:column;position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;background:#000}
-    .thread.open{display:flex}
-    .thread-header{background:#0a0a0a;border-bottom:1px solid #1f1f1f;padding:.85rem 1rem;display:flex;align-items:center;gap:.75rem;flex-shrink:0}
-    .thread-back{background:none;border:none;color:#f5f5f5;font-size:1.3rem;cursor:pointer}
-    .thread-avatar{width:36px;height:36px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;flex-shrink:0}
-    .thread-name{font-family:'Syne',sans-serif;font-weight:900;font-size:1rem;flex:1}
-    .thread-msgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.6rem}
-    .bubble{max-width:75%;padding:.65rem .95rem;border-radius:16px;font-size:.85rem;line-height:1.5;word-break:break-word}
-    .bubble.mine{align-self:flex-end;background:#e63212;color:#fff;border-bottom-right-radius:4px}
-    .bubble.theirs{align-self:flex-start;background:#1a1a1a;color:#f5f5f5;border-bottom-left-radius:4px}
-    .bubble-time{font-size:.6rem;opacity:.6;margin-top:.25rem;text-align:right}
-    .typing-indicator{align-self:flex-start;background:#1a1a1a;border-radius:16px;border-bottom-left-radius:4px;padding:.65rem .95rem;font-size:.8rem;color:#888}
-    .thread-input{background:#0a0a0a;border-top:1px solid #1f1f1f;padding:.75rem 1rem;display:flex;gap:.5rem;flex-shrink:0}
-    .thread-input input{flex:1;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:24px;padding:.65rem 1rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.85rem;outline:none}
-    .thread-input input:focus{border-color:#e63212}
-    .thread-send{background:#e63212;border:none;border-radius:50%;width:40px;height:40px;color:#fff;font-size:1.1rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-    .bot-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;align-items:center;padding:.6rem 1rem env(safe-area-inset-bottom,.4rem);background:#0a0a0a;border-top:1px solid #1f1f1f}
-    .bot-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-decoration:none;color:rgba(255,255,255,.5);font-size:.55rem;touch-action:manipulation}
-    .bot-btn.active{color:#f5f5f5}
-    .bot-btn .bicon{font-size:1.3rem}
-    .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#1db954;color:#000;padding:.65rem 1.4rem;border-radius:8px;font-size:.8rem;font-weight:700;display:none;z-index:9999;white-space:nowrap}
-    .toast.show{display:block}
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100%;overflow:hidden}
+    .top-bar{display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,10px) 16px 10px;background:#000;border-bottom:1px solid rgba(255,255,255,.08);position:relative}
+    .top-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:900}
+    .top-compose{position:absolute;right:14px;background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+    .tabs{display:flex;background:#000;border-bottom:1px solid rgba(255,255,255,.08)}
+    .tab-btn{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:600;color:#888;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s}
+    .tab-btn.active{color:#fff;border-bottom-color:#fff}
+    /* ACTIVITY */
+    #activityView{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    #activityView::-webkit-scrollbar{display:none}
+    .notif-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
+    .notif-item.unread{background:rgba(254,44,85,.05)}
+    .notif-av{width:44px;height:44px;border-radius:50%;background:#fe2c55;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex-shrink:0;position:relative}
+    .notif-av .notif-badge{position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;font-size:11px;border:1px solid #1a1a1a}
+    .notif-body{flex:1;min-width:0}
+    .notif-body .notif-text{font-size:13px;line-height:1.4;color:rgba(255,255,255,.9)}
+    .notif-body .notif-time{font-size:11px;color:#666;margin-top:2px}
+    .notif-thumb{width:44px;height:56px;border-radius:4px;background:#1a1a1a;object-fit:cover;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+    /* MESSAGES */
+    #messagesView{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none}
+    #messagesView::-webkit-scrollbar{display:none}
+    .dm-item{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
+    .dm-av{width:52px;height:52px;border-radius:50%;background:#25f4ee;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#000;flex-shrink:0;position:relative}
+    .dm-online{position:absolute;bottom:2px;right:2px;width:12px;height:12px;border-radius:50%;background:#1db954;border:2px solid #000}
+    .dm-info{flex:1;min-width:0}
+    .dm-info h3{font-size:14px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .dm-info p{font-size:13px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .dm-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+    .dm-time{font-size:11px;color:#666}
+    .dm-unread-badge{background:#fe2c55;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+    /* THREAD VIEW */
+    .thread-view{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:200;display:none;flex-direction:column}
+    .thread-view.open{display:flex}
+    .thread-top{display:flex;align-items:center;gap:10px;padding:env(safe-area-inset-top,10px) 14px 10px;border-bottom:1px solid rgba(255,255,255,.08);background:#000}
+    .thread-back{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px}
+    .thread-user-av{width:36px;height:36px;border-radius:50%;background:#25f4ee;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#000}
+    .thread-user-name{font-size:15px;font-weight:700;flex:1}
+    .thread-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+    .thread-msgs::-webkit-scrollbar{display:none}
+    .msg-bubble{max-width:72%;padding:9px 13px;border-radius:18px;font-size:14px;line-height:1.4;word-break:break-word}
+    .msg-bubble.mine{background:#fe2c55;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+    .msg-bubble.theirs{background:#1c1c1e;color:#fff;align-self:flex-start;border-bottom-left-radius:4px}
+    .msg-time{font-size:10px;color:#555;text-align:center;padding:4px 0}
+    .thread-input-row{display:flex;gap:8px;padding:10px 12px env(safe-area-inset-bottom,10px);border-top:1px solid rgba(255,255,255,.08);background:#000}
+    .thread-input{flex:1;background:#1c1c1e;border:none;border-radius:22px;padding:10px 16px;color:#fff;font-size:14px;outline:none}
+    .thread-send{background:#fe2c55;border:none;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+    /* MAIN LAYOUT */
+    .main-area{flex:1;overflow:hidden;display:flex;flex-direction:column}
+    .content-area{flex:1;overflow:hidden;display:flex;flex-direction:column}
+    /* BOTTOM NAV */
+    .bot-nav{display:flex;justify-content:space-around;align-items:center;padding:8px 0 env(safe-area-inset-bottom,8px);background:rgba(0,0,0,.95);border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:rgba(255,255,255,.55);font-size:10px;min-width:48px}
+    .nav-item.active{color:#fff}
+    .nav-item svg{width:26px;height:26px}
+    .nav-plus-wrap{display:flex;align-items:center}
+    .nav-plus{background:#fff;border-radius:8px;width:42px;height:28px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;position:relative}
+    .nav-plus::before{content:'';position:absolute;left:-5px;top:0;bottom:0;width:6px;border-radius:4px 0 0 4px;background:#25f4ee}
+    .nav-plus::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:6px;border-radius:0 4px 4px 0;background:#fe2c55}
+    .empty{text-align:center;padding:60px 24px;color:#555}
+    .empty h3{font-family:'Syne',sans-serif;font-size:1rem;color:#888;margin-bottom:8px}
   </style>
 </head>
-<body>
+<body style="display:flex;flex-direction:column;height:100%">
 
 <div class="top-bar">
-  <h1>💬 Messages</h1>
-</div>
-<div class="search-bar">
-  <input class="search-input" id="searchInput" type="text" placeholder="Search for a user to message..." autocomplete="off"/>
-  <div class="search-results" id="searchResults" style="display:none"></div>
+  <span class="top-title" id="inboxUsername">Inbox</span>
+  <button class="top-compose" onclick="openNewDM()">✏️</button>
 </div>
 
-<div class="inbox" id="inbox">
-  <div class="empty"><p style="font-size:2rem">💬</p><p style="margin-top:.5rem">Loading...</p></div>
+<div class="tabs">
+  <div class="tab-btn active" id="actTab" onclick="showTab('activity')">Activity</div>
+  <div class="tab-btn" id="msgTab" onclick="showTab('messages')">Messages</div>
 </div>
 
-<!-- Thread panel -->
-<div class="thread" id="thread">
-  <div class="thread-header">
-    <button class="thread-back" onclick="closeThread()">←</button>
-    <div class="thread-avatar" id="threadAvatar"></div>
-    <div class="thread-name" id="threadName"></div>
+<div class="content-area">
+  <div id="activityView"></div>
+  <div id="messagesView"></div>
+</div>
+
+<nav class="bot-nav">
+  <a href="feed.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </a>
+  <a href="search.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span>Discover</span>
+  </a>
+  <a href="upload.html" class="nav-item">
+    <div class="nav-plus-wrap"><div class="nav-plus">+</div></div>
+  </a>
+  <a href="messages.html" class="nav-item active">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+    <span>Inbox</span>
+  </a>
+  <a href="profile.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Me</span>
+  </a>
+</nav>
+
+<!-- THREAD VIEW -->
+<div class="thread-view" id="threadView">
+  <div class="thread-top">
+    <button class="thread-back" onclick="closeThread()">‹</button>
+    <div class="thread-user-av" id="threadAv">?</div>
+    <div class="thread-user-name" id="threadName">Loading...</div>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#fff;cursor:pointer" onclick="window.location.href='search.html'"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
   </div>
   <div class="thread-msgs" id="threadMsgs"></div>
-  <div class="thread-input">
-    <input type="text" id="msgInput" placeholder="Say something funny..."/>
-    <button class="thread-send" id="sendBtn">➤</button>
+  <div class="thread-input-row">
+    <input class="thread-input" id="threadInput" placeholder="Message..." />
+    <button class="thread-send" id="threadSend">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
   </div>
 </div>
 
-<div class="bot-bar">
-  <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
-  <a href="feed.html" class="bot-btn"><span class="bicon">😂</span><span>Watch</span></a>
-  <a href="upload.html" class="bot-btn"><span class="bicon">➕</span><span>Upload</span></a>
-  <a href="messages.html" class="bot-btn active"><span class="bicon">💬</span><span>DMs</span></a>
-  <a href="profile.html" class="bot-btn"><span class="bicon">👤</span><span>Me</span></a>
-</div>
-
-<div class="toast" id="toast"></div>
-
 <script>
-const API='https://cheka-backend.onrender.com';
-const WS_URL='wss://cheka-backend.onrender.com/ws/dm';
-const token=localStorage.getItem('cheka_token');
-const user=JSON.parse(localStorage.getItem('cheka_user')||'{}');
-if(!token)window.location.href='login.html';
+const API = 'https://cheka-backend.onrender.com';
+const WS_URL = 'wss://cheka-backend.onrender.com/ws/dm';
+const token = localStorage.getItem('cheka_token');
+const user = JSON.parse(localStorage.getItem('cheka_user') || '{}');
+if (!token) window.location.href = 'login.html';
 
-let activeUserId=null;
-let activeUsername='';
-let ws=null;
-let typingTimer=null;
-let searchTimer=null;
+document.getElementById('inboxUsername').textContent = '@' + (user.username || 'me');
 
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+let ws = null, currentDmUser = null, dmPolling = null;
+
+function showTab(tab) {
+  const isAct = tab === 'activity';
+  document.getElementById('actTab').classList.toggle('active', isAct);
+  document.getElementById('msgTab').classList.toggle('active', !isAct);
+  document.getElementById('activityView').style.display = isAct ? 'block' : 'none';
+  document.getElementById('messagesView').style.display = isAct ? 'none' : 'block';
+  if (!isAct) loadDMList();
 }
 
-function timeAgo(d){
-  const s=(Date.now()-new Date(d))/1000;
-  if(s<60)return 'now';
-  if(s<3600)return Math.floor(s/60)+'m';
-  if(s<86400)return Math.floor(s/3600)+'h';
-  return Math.floor(s/86400)+'d';
+// Check URL for direct open
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('dm')) {
+  const dmId = urlParams.get('dm');
+  const dmName = urlParams.get('username') || 'User';
+  setTimeout(() => openThread({ _id: dmId, username: dmName }), 100);
 }
+if (urlParams.get('tab') === 'messages') showTab('messages');
 
-async function loadInbox(){
-  try{
-    const res=await fetch(API+'/api/messages',{headers:{'Authorization':'Bearer '+token}});
-    const convos=await res.json();
-    const inbox=document.getElementById('inbox');
-    if(!Array.isArray(convos)||!convos.length){
-      inbox.innerHTML=`<div class="empty"><p style="font-size:2.5rem">💬</p><h2>No messages yet</h2><p>Search for a user above to start chatting</p></div>`;
-      return;
-    }
-    inbox.innerHTML=convos.map(c=>`
-      <div class="convo" onclick="openThread('${c.userId}','${c.username}')">
-        <div class="convo-avatar">${c.username?c.username[0].toUpperCase():'?'}</div>
-        <div class="convo-body">
-          <div class="convo-name">@${c.username}${c.unread?`<span class="unread-dot"></span>`:''}</div>
-          <div class="convo-preview">${c.lastMessage||'...'}</div>
+async function loadActivity() {
+  const view = document.getElementById('activityView');
+  view.innerHTML = '<div style="padding:40px;text-align:center;color:#555">Loading...</div>';
+  try {
+    const res = await fetch(API + '/api/notifications', { headers: { Authorization: 'Bearer ' + token } });
+    const items = await res.json();
+    if (!items.length) { view.innerHTML = '<div class="empty"><h3>No activity yet</h3><p>When people like, comment, or follow — you\'ll see it here</p></div>'; return; }
+    const icons = { like: '❤️', comment: '💬', follow: '👤', battle: '⚔️', gift: '🎁' };
+    view.innerHTML = items.map(n => `
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markRead('${n._id}')">
+        <div class="notif-av">
+          ${(n.fromUsername || 'U')[0].toUpperCase()}
+          <div class="notif-badge">${icons[n.type] || '🔔'}</div>
         </div>
-        <div class="convo-time">${timeAgo(c.lastTime)}</div>
+        <div class="notif-body">
+          <div class="notif-text"><strong>@${n.fromUsername || 'Someone'}</strong> ${n.message || ''}</div>
+          <div class="notif-time">${timeAgo(n.createdAt)}</div>
+        </div>
+        ${n.videoId ? '<div class="notif-thumb">😂</div>' : ''}
       </div>
     `).join('');
-  }catch(e){
-    document.getElementById('inbox').innerHTML='<div class="empty"><p>Could not load messages</p></div>';
-  }
+  } catch { view.innerHTML = '<div class="empty"><h3>Could not load activity</h3></div>'; }
 }
 
-async function openThread(userId,username){
-  activeUserId=userId;
-  activeUsername=username;
-  document.getElementById('threadAvatar').textContent=username[0].toUpperCase();
-  document.getElementById('threadName').textContent='@'+username;
-  document.getElementById('thread').classList.add('open');
-  document.getElementById('msgInput').focus();
-  await loadThread();
-  markRead();
-  connectWS();
-}
-
-function closeThread(){
-  document.getElementById('thread').classList.remove('open');
-  activeUserId=null;
-  if(ws){ws.close();ws=null;}
-  loadInbox();
-}
-
-async function loadThread(){
-  if(!activeUserId)return;
-  try{
-    const res=await fetch(API+'/api/messages/'+activeUserId,{headers:{'Authorization':'Bearer '+token}});
-    const msgs=await res.json();
-    const box=document.getElementById('threadMsgs');
-    if(!msgs.length){box.innerHTML='<div style="text-align:center;color:#555;padding:2rem;font-size:.8rem">No messages yet. Say hi! 👋</div>';return;}
-    box.innerHTML=msgs.map(m=>{
-      const mine=m.from===user.id||m.fromUsername===user.username;
-      return `<div class="bubble ${mine?'mine':'theirs'}">${escHtml(m.text||'')}<div class="bubble-time">${timeAgo(m.createdAt)}</div></div>`;
+async function loadDMList() {
+  const view = document.getElementById('messagesView');
+  view.innerHTML = '<div style="padding:40px;text-align:center;color:#555">Loading...</div>';
+  try {
+    const res = await fetch(API + '/api/dm/conversations', { headers: { Authorization: 'Bearer ' + token } });
+    const convs = await res.json();
+    if (!convs.length) {
+      view.innerHTML = '<div class="empty"><h3>No messages</h3><p>Start a conversation with a creator</p><div style="margin-top:16px"><a href="search.html" style="background:#fe2c55;color:#fff;padding:8px 20px;border-radius:20px;text-decoration:none;font-size:13px;font-weight:700">Find people</a></div></div>';
+      return;
+    }
+    view.innerHTML = convs.map(c => {
+      const other = c.participants?.find(p => p._id !== user.id) || {};
+      const initials = (other.username || c.username || 'U')[0].toUpperCase();
+      return `<div class="dm-item" onclick="openThread({_id:'${other._id || c.userId}',username:'${other.username || c.username || 'User'}'})">
+        <div class="dm-av" style="background:#${Math.floor(Math.random()*0x1000000).toString(16).padStart(6,'0')}40;color:#fff">${initials}</div>
+        <div class="dm-info">
+          <h3>@${other.username || c.username || 'user'}</h3>
+          <p>${c.lastMessage?.text || 'Tap to chat'}</p>
+        </div>
+        <div class="dm-meta">
+          <span class="dm-time">${c.lastMessage ? timeAgo(c.lastMessage.createdAt) : ''}</span>
+          ${c.unread ? '<div class="dm-unread-badge">' + c.unread + '</div>' : ''}
+        </div>
+      </div>`;
     }).join('');
-    box.scrollTop=box.scrollHeight;
-  }catch{toast('Could not load messages');}
+  } catch { view.innerHTML = '<div class="empty"><h3>Could not load DMs</h3></div>'; }
 }
 
-async function markRead(){
-  if(!activeUserId)return;
-  await fetch(API+'/api/messages/'+activeUserId+'/read',{method:'PUT',headers:{'Authorization':'Bearer '+token}}).catch(()=>{});
+async function markRead(id) {
+  await fetch(API + '/api/notifications/' + id + '/read', { method: 'PATCH', headers: { Authorization: 'Bearer ' + token } }).catch(() => {});
 }
 
-async function sendMessage(){
-  const input=document.getElementById('msgInput');
-  const text=input.value.trim();
-  if(!text||!activeUserId)return;
-  input.value='';
-  try{
-    const res=await fetch(API+'/api/messages/'+activeUserId,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({text})
-    });
-    if(res.ok)await loadThread();
-    else{const d=await res.json().catch(()=>({}));toast(d.msg||'Could not send');}
-  }catch{toast('Network error 😬');}
+function openThread(otherUser) {
+  currentDmUser = otherUser;
+  const view = document.getElementById('threadView');
+  view.classList.add('open');
+  document.getElementById('threadAv').textContent = (otherUser.username || 'U')[0].toUpperCase();
+  document.getElementById('threadName').textContent = '@' + otherUser.username;
+  document.getElementById('threadMsgs').innerHTML = '<div style="text-align:center;padding:20px;color:#555">Loading...</div>';
+  loadThread(otherUser._id);
+  connectWS(otherUser._id);
 }
 
-function connectWS(){
-  if(ws)ws.close();
-  try{
-    ws=new WebSocket(WS_URL+'?token='+encodeURIComponent(token));
-    ws.onmessage=(e)=>{
-      try{
-        const data=JSON.parse(e.data);
-        if(data.type==='message'&&activeUserId)loadThread();
-        if(data.type==='typing'&&data.from===activeUserId){
-          const box=document.getElementById('threadMsgs');
-          let ind=document.getElementById('typingInd');
-          if(data.isTyping){
-            if(!ind){ind=document.createElement('div');ind.id='typingInd';ind.className='typing-indicator';ind.textContent='typing...';box.appendChild(ind);}
-            box.scrollTop=box.scrollHeight;
-          } else {if(ind)ind.remove();}
-        }
-      }catch{}
+function closeThread() {
+  document.getElementById('threadView').classList.remove('open');
+  if (ws) { ws.close(); ws = null; }
+  clearInterval(dmPolling);
+  currentDmUser = null;
+}
+
+async function loadThread(otherId) {
+  try {
+    const res = await fetch(API + '/api/dm/' + otherId, { headers: { Authorization: 'Bearer ' + token } });
+    const msgs = await res.json();
+    renderMessages(msgs);
+  } catch {}
+}
+
+function renderMessages(msgs) {
+  const container = document.getElementById('threadMsgs');
+  if (!msgs.length) { container.innerHTML = '<div style="text-align:center;padding:40px;color:#555;font-size:13px">Start the conversation! 👋</div>'; return; }
+  container.innerHTML = msgs.map(m => {
+    const mine = m.senderId === user.id || m.senderUsername === user.username;
+    return `<div class="msg-bubble ${mine ? 'mine' : 'theirs'}">${m.text}</div>`;
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+function connectWS(otherId) {
+  try {
+    ws = new WebSocket(WS_URL + '?token=' + token + '&to=' + otherId);
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'message') {
+        const mine = data.senderId === user.id;
+        const container = document.getElementById('threadMsgs');
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble ' + (mine ? 'mine' : 'theirs');
+        bubble.textContent = data.text;
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+      }
     };
-    ws.onclose=()=>{ws=null;};
-  }catch{}
+    ws.onerror = () => { clearInterval(dmPolling); dmPolling = setInterval(() => loadThread(otherId), 5000); };
+  } catch { dmPolling = setInterval(() => loadThread(otherId), 5000); }
 }
 
-function sendTyping(isTyping){
-  if(ws&&ws.readyState===1&&activeUserId)ws.send(JSON.stringify({type:'typing',to:activeUserId,isTyping}));
+async function sendMessage() {
+  const input = document.getElementById('threadInput');
+  const text = input.value.trim();
+  if (!text || !currentDmUser) return;
+  input.value = '';
+  const body = JSON.stringify({ to: currentDmUser._id, text });
+  try {
+    if (ws && ws.readyState === 1) {
+      ws.send(body);
+      // Optimistic
+      const container = document.getElementById('threadMsgs');
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble mine';
+      bubble.textContent = text;
+      container.appendChild(bubble);
+      container.scrollTop = container.scrollHeight;
+    } else {
+      await fetch(API + '/api/dm/' + currentDmUser._id, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body });
+      loadThread(currentDmUser._id);
+    }
+  } catch {}
 }
 
-function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+document.getElementById('threadSend').onclick = sendMessage;
+document.getElementById('threadInput').onkeydown = e => { if (e.key === 'Enter') sendMessage(); };
 
-// Search
-document.getElementById('searchInput').addEventListener('input',function(){
-  const q=this.value.trim();
-  clearTimeout(searchTimer);
-  if(!q){document.getElementById('searchResults').style.display='none';return;}
-  searchTimer=setTimeout(async()=>{
-    try{
-      const res=await fetch(API+'/api/users?search='+encodeURIComponent(q),{headers:{'Authorization':'Bearer '+token}});
-      const users=await res.json();
-      const box=document.getElementById('searchResults');
-      if(!users.length){box.style.display='none';return;}
-      box.innerHTML=users.map(u=>`<div class="search-item" onclick="startChat('${u._id}','${u.username}')">@${u.username}${u.displayName?' — '+u.displayName:''}</div>`).join('');
-      box.style.display='block';
-    }catch{}
-  },300);
-});
+function openNewDM() { window.location.href = 'search.html'; }
 
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.search-bar'))document.getElementById('searchResults').style.display='none';
-});
-
-function startChat(userId,username){
-  document.getElementById('searchInput').value='';
-  document.getElementById('searchResults').style.display='none';
-  openThread(userId,username);
+function timeAgo(d) {
+  const s = (Date.now() - new Date(d)) / 1000;
+  if (s < 60) return 'now';
+  if (s < 3600) return Math.floor(s / 60) + 'm';
+  if (s < 86400) return Math.floor(s / 3600) + 'h';
+  return Math.floor(s / 86400) + 'd';
 }
 
-document.getElementById('sendBtn').addEventListener('click',sendMessage);
-document.getElementById('msgInput').addEventListener('keydown',e=>{
-  if(e.key==='Enter')sendMessage();
-  else{sendTyping(true);clearTimeout(typingTimer);typingTimer=setTimeout(()=>sendTyping(false),2000);}
-});
-
-const _p=new URLSearchParams(window.location.search);
-const _u=_p.get('user'),_n=_p.get('name');
-loadInbox();
-if(_u&&_n)setTimeout(()=>openThread(_u,decodeURIComponent(_n)),500);
+// Initialize
+showTab('activity');
+loadActivity();
 </script>
 </body>
 </html>

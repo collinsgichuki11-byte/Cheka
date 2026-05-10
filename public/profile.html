@@ -4,244 +4,307 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Profile — Cheka</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{background:#000;color:#f5f5f5;font-family:'Space Mono',monospace;min-height:100%}
-    .top-bar{background:#0a0a0a;border-bottom:1px solid #1f1f1f;display:flex;align-items:center;gap:1rem;padding:.85rem 1rem;position:sticky;top:0;z-index:100}
-    .top-bar h1{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;flex:1}
-    .edit-toggle{background:none;border:1px solid #2a2a2a;color:#f5f5f5;border-radius:8px;padding:.4rem .85rem;font-family:'Space Mono',monospace;font-size:.75rem;cursor:pointer;touch-action:manipulation}
-    .page{padding:1rem;padding-bottom:5.5rem;max-width:600px;margin:0 auto}
-    .profile-card{background:#111;border:1px solid #1f1f1f;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
-    .profile-top{display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem}
-    .avatar{width:72px;height:72px;border-radius:50%;background:#e63212;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:900;flex-shrink:0}
-    .profile-info h2{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:.2rem}
-    .profile-info .handle{color:#888;font-size:.8rem}
-    .bio-text{color:#aaa;font-size:.8rem;line-height:1.6;margin-top:.6rem}
-    .link-text{color:#e63212;font-size:.8rem;margin-top:.3rem;word-break:break-all}
-    .stats-row{display:flex;gap:1.5rem;padding-top:1rem;border-top:1px solid #1f1f1f;margin-top:1rem}
-    .stat h3{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:900;color:#e63212}
-    .stat p{color:#888;font-size:.7rem;margin-top:.1rem}
-    .edit-form{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid #1f1f1f}
-    .edit-form.open{display:block}
-    .fg{margin-bottom:1rem}
-    .fg label{display:block;font-size:.75rem;color:#888;margin-bottom:.35rem}
-    .fg input,.fg textarea,.fg select{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:.65rem .9rem;color:#f5f5f5;font-family:'Space Mono',monospace;font-size:.82rem;outline:none}
-    .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:#e63212}
-    .fg textarea{resize:vertical;min-height:70px}
-    .save-btn{background:#e63212;color:#fff;border:none;border-radius:8px;padding:.75rem 1.5rem;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer;width:100%;touch-action:manipulation}
-    .section-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:900;margin-bottom:1rem}
-    .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem}
-    .video-card{background:#111;border:1px solid #1f1f1f;border-radius:10px;overflow:hidden}
-    .video-thumb{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#0a0a0a}
-    .video-thumb iframe,.video-thumb video{position:absolute;top:0;left:0;width:100%;height:100%;border:none;object-fit:cover}
-    .video-details{padding:.6rem .75rem}
-    .video-details h3{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .video-meta{display:flex;justify-content:space-between;margin-top:.3rem;font-size:.7rem;color:#888}
-    .del-btn{width:100%;background:transparent;border:1px solid #e63212;color:#e63212;border-radius:6px;padding:.4rem;font-family:'Space Mono',monospace;font-size:.7rem;cursor:pointer;margin-top:.5rem;touch-action:manipulation}
-    .empty-state{text-align:center;padding:2.5rem;color:#888;grid-column:1/-1}
-    .empty-state h2{font-family:'Syne',sans-serif;color:#f5f5f5;margin-bottom:.4rem;font-size:1.1rem}
-    .go-upload{display:inline-block;background:#e63212;color:#fff;border-radius:8px;padding:.6rem 1.3rem;text-decoration:none;font-size:.8rem;font-weight:700;margin-top:.75rem}
-    .logout-btn{width:100%;background:transparent;border:1px solid #2a2a2a;color:#888;border-radius:8px;padding:.7rem;font-family:'Space Mono',monospace;font-size:.8rem;cursor:pointer;margin-top:1rem;touch-action:manipulation}
-    .bot-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;justify-content:space-around;align-items:center;padding:.6rem 1rem env(safe-area-inset-bottom,.4rem);background:#0a0a0a;border-top:1px solid #1f1f1f}
-    .bot-btn{display:flex;flex-direction:column;align-items:center;gap:.2rem;text-decoration:none;color:rgba(255,255,255,.5);font-size:.55rem;touch-action:manipulation}
-    .bot-btn.active{color:#f5f5f5}
-    .bot-btn .bicon{font-size:1.3rem}
-    .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:#1db954;color:#000;padding:.65rem 1.4rem;border-radius:8px;font-size:.8rem;font-weight:700;display:none;z-index:9999;white-space:nowrap}
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100%}
+    /* TOP BAR */
+    .top-bar{position:sticky;top:0;z-index:10;background:#000;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,10px) 16px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .top-bar .username-title{font-weight:700;font-size:16px}
+    .top-back{position:absolute;left:14px;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px}
+    .top-more{position:absolute;right:14px;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px}
+    /* PROFILE HEADER */
+    .profile-header{padding:20px 16px 0;text-align:center}
+    .avatar-ring{width:86px;height:86px;border-radius:50%;margin:0 auto 10px;background:linear-gradient(135deg,#25f4ee,#fe2c55);padding:2px;cursor:pointer}
+    .avatar-inner{width:100%;height:100%;border-radius:50%;background:#fe2c55;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:900;border:2px solid #000}
+    .profile-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:900;margin-bottom:4px}
+    .profile-handle{color:#888;font-size:13px;margin-bottom:12px}
+    /* STATS ROW */
+    .stats-row{display:flex;justify-content:center;gap:0;margin-bottom:14px}
+    .stat-box{flex:1;max-width:90px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 8px}
+    .stat-box:not(:last-child){border-right:1px solid #1c1c1e}
+    .stat-num{font-family:'Syne',sans-serif;font-size:17px;font-weight:900}
+    .stat-label{font-size:12px;color:#888}
+    /* ACTION BUTTONS */
+    .action-row{display:flex;gap:8px;padding:0 16px 16px;justify-content:center}
+    .btn-edit{flex:1;max-width:200px;background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:4px;padding:7px 12px;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+    .btn-share{background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:4px;padding:7px 12px;color:#fff;font-size:14px;cursor:pointer}
+    /* BIO */
+    .bio-section{padding:0 16px 16px;text-align:center}
+    .bio-text{font-size:14px;line-height:1.5;color:rgba(255,255,255,.85)}
+    .bio-link{color:#25f4ee;font-size:13px;margin-top:4px;display:block}
+    /* TABS */
+    .tabs{display:flex;border-bottom:1px solid #1c1c1e;position:sticky;top:44px;background:#000;z-index:9}
+    .tab{flex:1;display:flex;justify-content:center;padding:10px;border-bottom:2px solid transparent;cursor:pointer;color:#555}
+    .tab.active{border-bottom-color:#fff;color:#fff}
+    .tab svg{width:22px;height:22px}
+    /* VIDEO GRID */
+    .video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px}
+    .vg-item{position:relative;aspect-ratio:9/16;overflow:hidden;cursor:pointer;background:#111}
+    .vg-item video,.vg-thumb{width:100%;height:100%;object-fit:cover}
+    .vg-thumb{display:flex;align-items:center;justify-content:center;font-size:2rem;background:linear-gradient(135deg,#1a1a1a,#2a2a2a)}
+    .vg-likes{position:absolute;bottom:4px;left:4px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8);display:flex;align-items:center;gap:3px}
+    .vg-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    /* EDIT SHEET */
+    .sheet-backdrop{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:100;display:none}
+    .sheet-backdrop.open{display:block}
+    .edit-sheet{position:fixed;bottom:0;left:0;right:0;z-index:101;background:#1a1a1a;border-radius:16px 16px 0 0;padding:16px 16px env(safe-area-inset-bottom,16px);max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s}
+    .edit-sheet.open{transform:translateY(0)}
+    .sheet-handle{width:40px;height:4px;border-radius:2px;background:#444;margin:0 auto 14px}
+    .edit-title{font-family:'Syne',sans-serif;font-weight:900;font-size:18px;margin-bottom:16px}
+    .fg{margin-bottom:14px}
+    .fg label{display:block;font-size:12px;color:#888;margin-bottom:6px}
+    .fg input,.fg textarea,.fg select{width:100%;background:#2a2a2a;border:none;border-radius:10px;padding:10px 12px;color:#fff;font-size:14px;outline:none}
+    .fg input:focus,.fg textarea:focus{outline:1px solid #fe2c55}
+    .fg textarea{resize:vertical;min-height:72px}
+    .save-btn{width:100%;background:#fe2c55;border:none;border-radius:10px;padding:13px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+    /* EMPTY */
+    .empty{text-align:center;padding:48px 24px;color:#555;grid-column:1/-1}
+    .empty h3{font-family:'Syne',sans-serif;font-size:1rem;color:#888;margin-bottom:8px}
+    .empty a{background:#fe2c55;color:#fff;border-radius:6px;padding:8px 20px;text-decoration:none;font-size:13px;font-weight:700;display:inline-block;margin-top:8px}
+    /* BOTTOM NAV */
+    .bot-nav{position:fixed;bottom:0;left:0;right:0;z-index:20;display:flex;justify-content:space-around;align-items:center;padding:8px 0 env(safe-area-inset-bottom,8px);background:rgba(0,0,0,.95);border-top:1px solid rgba(255,255,255,.08)}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:rgba(255,255,255,.55);font-size:10px;min-width:48px}
+    .nav-item.active{color:#fff}
+    .nav-item svg{width:26px;height:26px}
+    .nav-plus-wrap{display:flex;align-items:center}
+    .nav-plus{background:#fff;border-radius:8px;width:42px;height:28px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;position:relative}
+    .nav-plus::before{content:'';position:absolute;left:-5px;top:0;bottom:0;width:6px;border-radius:4px 0 0 4px;background:#25f4ee}
+    .nav-plus::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:6px;border-radius:0 4px 4px 0;background:#fe2c55}
+    .page-pad{padding-bottom:72px}
+    .toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.12);backdrop-filter:blur(8px);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap;display:none}
     .toast.show{display:block}
   </style>
 </head>
 <body>
-
 <div class="top-bar">
-  <h1>👤 Profile</h1>
-  <button class="edit-toggle" id="editToggle" onclick="toggleEdit()">Edit</button>
+  <span class="username-title" id="topHandle">@profile</span>
+  <button class="top-more" onclick="toggleMore()">⋯</button>
 </div>
 
-<div class="page">
-  <div class="profile-card">
-    <div class="profile-top">
-      <div class="avatar" id="avatar">?</div>
-      <div class="profile-info">
-        <h2 id="profileName">Loading...</h2>
-        <div class="handle" id="profileHandle"></div>
-        <div class="bio-text" id="bioText"></div>
-        <div class="link-text" id="linkText"></div>
-      </div>
-    </div>
+<div class="page-pad">
+  <div class="profile-header">
+    <div class="avatar-ring"><div class="avatar-inner" id="avatar">?</div></div>
+    <div class="profile-name" id="profileName">Loading...</div>
+    <div class="profile-handle" id="profileHandle"></div>
     <div class="stats-row">
-      <div class="stat"><h3 id="totalVideos">0</h3><p>Videos</p></div>
-      <div class="stat"><h3 id="totalLikes">0</h3><p>Likes</p></div>
-      <div class="stat"><h3 id="totalFollowers">0</h3><p>Followers</p></div>
+      <div class="stat-box"><div class="stat-num" id="statFollowing">0</div><div class="stat-label">Following</div></div>
+      <div class="stat-box"><div class="stat-num" id="statFollowers">0</div><div class="stat-label">Followers</div></div>
+      <div class="stat-box"><div class="stat-num" id="statLikes">0</div><div class="stat-label">Likes</div></div>
     </div>
-
-    <div class="edit-form" id="editForm">
-      <div class="fg">
-        <label>Display Name</label>
-        <input type="text" id="editDisplayName" maxlength="40" placeholder="Your name"/>
-      </div>
-      <div class="fg">
-        <label>Bio (max 160 chars)</label>
-        <textarea id="editBio" maxlength="160" placeholder="Tell the world who you are..."></textarea>
-      </div>
-      <div class="fg">
-        <label>Link in bio</label>
-        <input type="text" id="editLink" maxlength="200" placeholder="https://..."/>
-      </div>
-      <div class="fg">
-        <label>Who can comment on your videos</label>
-        <select id="editWhoCanComment">
-          <option value="everyone">Everyone</option>
-          <option value="followers">Followers only</option>
-          <option value="noone">No one</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Who can message you</label>
-        <select id="editWhoCanMessage">
-          <option value="everyone">Everyone</option>
-          <option value="followers">Followers only</option>
-          <option value="noone">No one</option>
-        </select>
-      </div>
-      <button class="save-btn" onclick="saveProfile()">💾 Save Changes</button>
+    <div class="action-row">
+      <button class="btn-edit" onclick="openEdit()">Edit profile</button>
+      <button class="btn-share" onclick="shareProfile()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
     </div>
-
-    <button class="logout-btn" onclick="logout()">Sign Out</button>
+    <div class="bio-section">
+      <div class="bio-text" id="bioText"></div>
+      <a class="bio-link" id="bioLink" href="#" target="_blank" style="display:none"></a>
+    </div>
   </div>
 
-  <div class="section-title">My Videos 🎬</div>
-  <div id="myVideos" class="video-grid">
-    <div class="empty-state"><p>Loading...</p></div>
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('videos',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </div>
+    <div class="tab" onclick="switchTab('liked',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <div class="tab" onclick="switchTab('private',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
   </div>
+
+  <div id="videoGrid" class="video-grid"></div>
 </div>
 
-<div class="bot-bar">
-  <a href="index.html" class="bot-btn"><span class="bicon">🏠</span><span>Home</span></a>
-  <a href="feed.html" class="bot-btn"><span class="bicon">😂</span><span>Watch</span></a>
-  <a href="upload.html" class="bot-btn"><span class="bicon">➕</span><span>Upload</span></a>
-  <a href="messages.html" class="bot-btn"><span class="bicon">💬</span><span>DMs</span></a>
-  <a href="profile.html" class="bot-btn active"><span class="bicon">👤</span><span>Me</span></a>
+<!-- EDIT SHEET -->
+<div class="sheet-backdrop" id="sheetBg" onclick="closeEdit()"></div>
+<div class="edit-sheet" id="editSheet">
+  <div class="sheet-handle"></div>
+  <div class="edit-title">Edit Profile</div>
+  <div class="fg"><label>Display Name</label><input type="text" id="editName" maxlength="40" placeholder="Your name"/></div>
+  <div class="fg"><label>Bio</label><textarea id="editBio" maxlength="160" placeholder="Tell people about yourself..."></textarea></div>
+  <div class="fg"><label>Link in bio</label><input type="text" id="editLink" placeholder="https://..."/></div>
+  <div class="fg"><label>Who can comment</label>
+    <select id="editComment" style="appearance:none">
+      <option value="everyone">Everyone</option>
+      <option value="followers">Followers only</option>
+      <option value="noone">No one</option>
+    </select>
+  </div>
+  <button class="save-btn" onclick="saveProfile()">Save</button>
+  <button style="width:100%;background:none;border:none;color:#888;padding:12px;margin-top:4px;cursor:pointer;font-size:14px" onclick="logout()">Sign out</button>
 </div>
+
+<nav class="bot-nav">
+  <a href="feed.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Home</span>
+  </a>
+  <a href="search.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span>Discover</span>
+  </a>
+  <a href="upload.html" class="nav-item">
+    <div class="nav-plus-wrap"><div class="nav-plus">+</div></div>
+  </a>
+  <a href="messages.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    <span>Inbox</span>
+  </a>
+  <a href="profile.html" class="nav-item active">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Me</span>
+  </a>
+</nav>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const API='https://cheka-backend.onrender.com';
-const token=localStorage.getItem('cheka_token');
-let user=JSON.parse(localStorage.getItem('cheka_user')||'{}');
-if(!token)window.location.href='login.html';
+const API = 'https://cheka-backend.onrender.com';
+const token = localStorage.getItem('cheka_token');
+let user = JSON.parse(localStorage.getItem('cheka_user') || '{}');
+if (!token) window.location.href = 'login.html';
 
-function toast(msg,green=true){
-  const t=document.getElementById('toast');
-  t.style.background=green?'#1db954':'#e63212';
-  t.style.color=green?'#000':'#fff';
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+let myVideos = [], currentTab = 'videos';
+
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderGrid();
 }
 
-function toggleEdit(){
-  const f=document.getElementById('editForm');
-  const open=f.classList.toggle('open');
-  document.getElementById('editToggle').textContent=open?'Cancel':'Edit';
-  if(open)loadFullProfile();
-}
+function renderGrid() {
+  const grid = document.getElementById('videoGrid');
+  let vids = [];
+  if (currentTab === 'videos') vids = myVideos;
+  else if (currentTab === 'liked') vids = myVideos.filter(v => v.liked);
+  else vids = myVideos.filter(v => v.private);
 
-async function loadFullProfile(){
-  try{
-    const res=await fetch(API+'/api/users/me',{headers:{'Authorization':'Bearer '+token}});
-    const u=await res.json();
-    document.getElementById('editDisplayName').value=u.displayName||'';
-    document.getElementById('editBio').value=u.bio||'';
-    document.getElementById('editLink').value=u.link||'';
-    document.getElementById('editWhoCanComment').value=u.whoCanComment||'everyone';
-    document.getElementById('editWhoCanMessage').value=u.whoCanMessage||'everyone';
-    document.getElementById('bioText').textContent=u.bio||'';
-    document.getElementById('linkText').textContent=u.link||'';
-  }catch{}
-}
-
-async function saveProfile(){
-  const displayName=document.getElementById('editDisplayName').value.trim();
-  const bio=document.getElementById('editBio').value.trim();
-  const link=document.getElementById('editLink').value.trim();
-  const whoCanComment=document.getElementById('editWhoCanComment').value;
-  const whoCanMessage=document.getElementById('editWhoCanMessage').value;
-  try{
-    const res=await fetch(API+'/api/users/me',{
-      method:'PATCH',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
-      body:JSON.stringify({displayName,bio,link,whoCanComment,whoCanMessage})
-    });
-    const u=await res.json();
-    if(!res.ok){toast(u.msg||'Could not save',false);return;}
-    toast('Profile updated! ✅');
-    document.getElementById('profileName').textContent=u.displayName||('@'+u.username);
-    document.getElementById('bioText').textContent=u.bio||'';
-    document.getElementById('linkText').textContent=u.link||'';
-    toggleEdit();
-  }catch{toast('Network error',false);}
-}
-
-async function deleteVideo(id){
-  if(!confirm('Delete this video?'))return;
-  try{
-    const res=await fetch(API+'/api/videos/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+token}});
-    if(res.ok){toast('Video deleted');loadMyVideos();}
-    else toast('Could not delete',false);
-  }catch{toast('Network error',false);}
-}
-
-async function loadMyVideos(){
-  try{
-    const res=await fetch(API+'/api/videos',{headers:{'Authorization':'Bearer '+token}});
-    const all=await res.json();
-    const mine=all.filter(v=>v.creatorName===user.username);
-
-    document.getElementById('avatar').textContent=user.username?user.username[0].toUpperCase():'?';
-    document.getElementById('profileName').textContent=user.displayName||('@'+user.username);
-    document.getElementById('profileHandle').textContent='@'+user.username;
-    document.getElementById('totalVideos').textContent=mine.length;
-    document.getElementById('totalLikes').textContent=mine.reduce((s,v)=>s+(v.likes||0),0);
-
-    try{
-      const fr=await fetch(API+'/api/follows/'+user.id+'/count');
-      const fd=await fr.json();
-      document.getElementById('totalFollowers').textContent=fd.followers||fd.count||0;
-    }catch{}
-
-    const grid=document.getElementById('myVideos');
-    if(!mine.length){
-      grid.innerHTML=`<div class="empty-state"><h2>No videos yet 😅</h2><p>Upload your first funny video!</p><a href="upload.html" class="go-upload">Upload Now</a></div>`;
-      return;
-    }
-    grid.innerHTML=mine.map(v=>`
-      <div class="video-card" id="vc-${v._id}">
-        <div class="video-thumb">
-          ${v.videoType==='direct'&&v.videoUrl
-            ?`<video src="${v.videoUrl}" muted playsinline></video>`
-            :`<iframe src="https://www.youtube.com/embed/${v.youtubeId}" allowfullscreen loading="lazy"></iframe>`}
-        </div>
-        <div class="video-details">
-          <h3>${v.title}</h3>
-          <div class="video-meta"><span>${new Date(v.createdAt).toLocaleDateString()}</span><span>❤️ ${v.likes||0}</span></div>
-          <button class="del-btn" onclick="deleteVideo('${v._id}')">🗑 Delete</button>
-        </div>
-      </div>
-    `).join('');
-  }catch{
-    document.getElementById('myVideos').innerHTML='<div class="empty-state"><p>Could not load videos</p></div>';
+  if (!vids.length) {
+    grid.innerHTML = currentTab === 'videos'
+      ? '<div class="empty"><h3>No videos yet</h3><p>Your videos will appear here</p><a href="upload.html">Upload</a></div>'
+      : '<div class="empty"><h3>Nothing here</h3></div>';
+    return;
   }
+  grid.innerHTML = vids.map(v => `
+    <div class="vg-item" onclick="window.location.href='feed.html#${v._id}'">
+      ${v.videoType === 'direct' && v.videoUrl
+        ? `<video src="${v.videoUrl}" muted preload="none"></video>`
+        : `<div class="vg-thumb">😂</div>`}
+      <div class="vg-likes">▶ ${fmtNum(v.views||0)}</div>
+      <button class="vg-del" onclick="event.stopPropagation();deleteVideo('${v._id}')">🗑</button>
+    </div>
+  `).join('');
 }
 
-function logout(){
-  localStorage.removeItem('cheka_token');
-  localStorage.removeItem('cheka_user');
-  window.location.href='index.html';
+async function loadProfile() {
+  try {
+    const [meRes, vRes] = await Promise.all([
+      fetch(API + '/api/users/me', { headers: { Authorization: 'Bearer ' + token } }),
+      fetch(API + '/api/videos', { headers: { Authorization: 'Bearer ' + token } })
+    ]);
+    const me = await meRes.json();
+    const allVideos = await vRes.json();
+    myVideos = allVideos.filter(v => v.creatorName === user.username || v.creatorId === user.id);
+
+    document.getElementById('avatar').textContent = (me.displayName || me.username || 'U')[0].toUpperCase();
+    document.getElementById('profileName').textContent = me.displayName || me.username;
+    document.getElementById('profileHandle').textContent = '@' + me.username;
+    document.getElementById('topHandle').textContent = '@' + me.username;
+    document.getElementById('statLikes').textContent = fmtNum(myVideos.reduce((s,v)=>s+(v.likes||0),0));
+    document.getElementById('statFollowing').textContent = fmtNum(me.followingCount || 0);
+    document.getElementById('statFollowers').textContent = fmtNum(me.followersCount || 0);
+
+    const bio = me.bio || '';
+    document.getElementById('bioText').textContent = bio;
+    const linkEl = document.getElementById('bioLink');
+    if (me.link) { linkEl.href = me.link; linkEl.textContent = me.link; linkEl.style.display = 'block'; }
+
+    // Pre-fill edit form
+    document.getElementById('editName').value = me.displayName || '';
+    document.getElementById('editBio').value = bio;
+    document.getElementById('editLink').value = me.link || '';
+    document.getElementById('editComment').value = me.whoCanComment || 'everyone';
+
+    renderGrid();
+  } catch (e) {}
 }
 
-loadMyVideos();
-loadFullProfile();
+async function deleteVideo(id) {
+  if (!confirm('Delete this video?')) return;
+  try {
+    const res = await fetch(API + '/api/videos/' + id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + token } });
+    if (res.ok) { myVideos = myVideos.filter(v => v._id !== id); renderGrid(); toast('Deleted'); }
+  } catch {}
+}
+
+async function saveProfile() {
+  const body = {
+    displayName: document.getElementById('editName').value.trim(),
+    bio: document.getElementById('editBio').value.trim(),
+    link: document.getElementById('editLink').value.trim(),
+    whoCanComment: document.getElementById('editComment').value
+  };
+  try {
+    const res = await fetch(API + '/api/users/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(body) });
+    if (res.ok) {
+      const u = await res.json();
+      document.getElementById('profileName').textContent = u.displayName || u.username;
+      document.getElementById('bioText').textContent = u.bio || '';
+      closeEdit(); toast('Profile saved!');
+    } else toast('Save failed');
+  } catch { toast('Network error'); }
+}
+
+function toggleMore() {
+  const actions = [
+    { label: '⚔️ Battles', href: 'battles.html' },
+    { label: '🔴 Live', href: 'live.html' },
+    { label: '🔔 Notifications', href: 'notifications.html' },
+    { label: '🚪 Sign Out', action: logout }
+  ];
+  const sheet = document.createElement('div');
+  sheet.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:200;background:#1a1a1a;border-radius:12px 12px 0 0;padding:16px 0 env(safe-area-inset-bottom,16px)';
+  sheet.innerHTML = '<div style="width:40px;height:4px;border-radius:2px;background:#444;margin:0 auto 10px"></div>' +
+    actions.map(a => `<div style="padding:14px 20px;font-size:15px;border-bottom:1px solid #2a2a2a;cursor:pointer" onclick="${a.href ? "window.location.href='" + a.href + "'" : 'logout()'}">${a.label}</div>`).join('');
+  const bg = document.createElement('div');
+  bg.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:199';
+  bg.onclick = () => { sheet.remove(); bg.remove(); };
+  document.body.appendChild(bg);
+  document.body.appendChild(sheet);
+}
+
+function openEdit() {
+  document.getElementById('sheetBg').classList.add('open');
+  document.getElementById('editSheet').classList.add('open');
+}
+function closeEdit() {
+  document.getElementById('sheetBg').classList.remove('open');
+  document.getElementById('editSheet').classList.remove('open');
+}
+function shareProfile() {
+  if (navigator.share) navigator.share({ title: 'Follow me on Cheka', url: window.location.href });
+  else navigator.clipboard.writeText(window.location.href).then(() => toast('Profile link copied!'));
+}
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+function fmtNum(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1)+'M';
+  if (n >= 1000) return (n/1000).toFixed(1)+'K';
+  return n;
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+loadProfile();
 </script>
 </body>
 </html>

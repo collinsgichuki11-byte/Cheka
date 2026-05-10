@@ -3,141 +3,37 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cheka — Kenya's Home of Funny</title>
-  <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Space+Mono&display=swap" rel="stylesheet"/>
+  <title>Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
   <link rel="manifest" href="/manifest.json"/>
-  <meta name="theme-color" content="#e63212"/>
+  <meta name="theme-color" content="#fe2c55"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
   <meta name="apple-mobile-web-app-title" content="Cheka"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100%}
+    .splash{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;gap:12px}
+    .splash-logo{font-family:'Syne',sans-serif;font-size:4rem;font-weight:900;background:linear-gradient(135deg,#fe2c55,#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .splash-sub{font-size:14px;color:#888}
+    .spinner{width:28px;height:28px;border:3px solid rgba(255,255,255,.15);border-top-color:#fe2c55;border-radius:50%;animation:spin .8s linear infinite;margin-top:24px}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  </style>
 </head>
 <body>
-
-  <!-- NAVBAR -->
-  <nav>
-    <div class="logo">😂 Cheka</div>
-    <div class="nav-links">
-      <a href="feed.html">Watch</a>
-      <a href="creators.html">Creators</a>
-      <a href="login.html">Log In</a>
-      <a href="signup.html" class="btn-join">Join Free</a>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-text">
-      <span class="tag">🇰🇪 Made in Kenya</span>
-      <h1>Kenya's Home<br/>of <span class="highlight">Funny</span></h1>
-      <p>Watch hilarious Kenyan content. Support your favourite creators. Laugh till you cry.</p>
-      <div class="hero-buttons">
-        <a href="javascript:goToFeed()" class="btn-primary">Start Watching</a>
-        <a href="javascript:goToFeed()" class="btn-secondary">Become a Creator</a>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="video-card">
-        <div class="video-thumb">😂</div>
-        <div class="video-info">
-          <span class="creator-name">@KenyaFunny</span>
-          <span class="video-title">When matatu conductor...</span>
-          <span class="views">124K views</span>
-        </div>
-      </div>
-      <div class="video-card card-2">
-        <div class="video-thumb">🤣</div>
-        <div class="video-info">
-          <span class="creator-name">@NairobiVibes</span>
-          <span class="video-title">Campus life be like...</span>
-          <span class="views">89K views</span>
-        </div>
-      </div>
-      <div class="video-card card-3">
-        <div class="video-thumb">💀</div>
-        <div class="video-info">
-          <span class="creator-name">@ShengMaster</span>
-          <span class="video-title">Klist wa mtaa...</span>
-          <span class="views">203K views</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- STATS -->
-  <section class="stats">
-    <div class="stat">
-      <h2>100%</h2>
-      <p>Kenyan Content</p>
-    </div>
-    <div class="stat">
-      <h2>Free</h2>
-      <p>Always Free to Watch</p>
-    </div>
-    <div class="stat">
-      <h2>M-Pesa</h2>
-      <p>Tip Creators Directly</p>
-    </div>
-    <div class="stat">
-      <h2>🇰🇪</h2>
-      <p>Built for Kenyans</p>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="how">
-    <h2>How Cheka Works</h2>
-    <div class="steps">
-      <div class="step">
-        <span class="step-num">01</span>
-        <h3>Watch</h3>
-        <p>Browse the funniest Kenyan content all in one place</p>
-      </div>
-      <div class="step">
-        <span class="step-num">02</span>
-        <h3>Discover</h3>
-        <p>Find new creators making content in Swahili, Sheng and English</p>
-      </div>
-      <div class="step">
-        <span class="step-num">03</span>
-        <h3>Support</h3>
-        <p>Tip your favourite creators directly via M-Pesa</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta">
-    <h2>Ready to Cheka? 😂</h2>
-    <p>Join thousands of Kenyans already laughing daily</p>
-    <a href="#" class="btn-primary">Join For Free</a>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="logo">😂 Cheka</div>
-    <p>Built in Kenya 🇰🇪 For Kenya</p>
-    <p class="copy">© 2026 Cheka. All rights reserved.</p>
-  </footer>
-
-  <script src="script.js"></script>
+<div class="splash">
+  <div class="splash-logo">😂 Cheka</div>
+  <div class="splash-sub">Kenya's #1 comedy platform</div>
+  <div class="spinner"></div>
+</div>
 <script>
-function goToFeed() {
-  const token = localStorage.getItem('cheka_token');
-  if (token) {
-    window.location.href = 'feed.html';
-  } else {
-    window.location.href = 'signup.html';
-  }
-}
-</script>
-<script>
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js')
-    .then(()=>console.log('SW registered'))
-    .catch(e=>console.log('SW error',e));
-}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+const token=localStorage.getItem('cheka_token');
+setTimeout(()=>{
+  if(token) window.location.replace('feed.html');
+  else window.location.replace('login.html');
+},800);
 </script>
 </body>
 </html>
