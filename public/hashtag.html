@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Hashtag — Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100%;padding-bottom:80px}
+    .hero{background:linear-gradient(160deg,rgba(254,44,85,.15),rgba(0,0,0,1) 70%);padding:env(safe-area-inset-top,52px) 16px 20px;text-align:center}
+    .hero-tag{font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;margin-bottom:6px}
+    .hero-count{font-size:13px;color:#888;margin-bottom:16px}
+    .trend-btn{background:#fe2c55;border:none;border-radius:20px;padding:7px 18px;color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+    .back-btn{position:fixed;top:env(safe-area-inset-top,10px);left:12px;z-index:10;background:rgba(0,0,0,.7);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.08);background:#000;position:sticky;top:0;z-index:9}
+    .tab{flex:1;text-align:center;padding:10px;font-size:13px;font-weight:600;color:#888;border-bottom:2px solid transparent;cursor:pointer}
+    .tab.active{color:#fff;border-bottom-color:#fff}
+    .video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px}
+    .vg-item{position:relative;aspect-ratio:9/16;overflow:hidden;cursor:pointer;background:#111}
+    .vg-thumb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:linear-gradient(135deg,#1a1a1a,#2a2a2a)}
+    .vg-item video{width:100%;height:100%;object-fit:cover}
+    .vg-views{position:absolute;bottom:4px;left:4px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+    .empty{text-align:center;padding:60px 24px;color:#555;grid-column:1/-1}
+    .bot-nav{position:fixed;bottom:0;left:0;right:0;z-index:20;display:flex;justify-content:space-around;align-items:center;padding:8px 0 env(safe-area-inset-bottom,8px);background:rgba(0,0,0,.95);border-top:1px solid rgba(255,255,255,.08)}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:rgba(255,255,255,.55);font-size:10px;min-width:48px}
+    .nav-item svg{width:26px;height:26px}
+    .nav-plus-wrap{display:flex;align-items:center}
+    .nav-plus{background:#fff;border-radius:8px;width:42px;height:28px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;position:relative}
+    .nav-plus::before{content:'';position:absolute;left:-5px;top:0;bottom:0;width:6px;border-radius:4px 0 0 4px;background:#25f4ee}
+    .nav-plus::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:6px;border-radius:0 4px 4px 0;background:#fe2c55}
+  </style>
+</head>
+<body>
+<button class="back-btn" onclick="history.back()">‹</button>
+<div class="hero">
+  <div class="hero-tag" id="heroTag">#cheka</div>
+  <div class="hero-count" id="heroCount">Loading...</div>
+  <button class="trend-btn" onclick="window.location.href='upload.html'">+ Use this hashtag</button>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('top',this)">Top</div>
+  <div class="tab" onclick="showTab('recent',this)">Recent</div>
+</div>
+<div class="video-grid" id="videoGrid"></div>
+<nav class="bot-nav">
+  <a href="feed.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a>
+  <a href="search.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span>Discover</span></a>
+  <a href="upload.html" class="nav-item"><div class="nav-plus-wrap"><div class="nav-plus">+</div></div></a>
+  <a href="messages.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>Inbox</span></a>
+  <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Me</span></a>
+</nav>
+<script>
+const API='https://cheka-backend.onrender.com';
+const token=localStorage.getItem('cheka_token');
+if(!token)window.location.href='login.html';
+const params=new URLSearchParams(window.location.search);
+const tag=params.get('tag')||'cheka';
+document.getElementById('heroTag').textContent='#'+tag;
+document.title='#'+tag+' — Cheka';
+let allVideos=[];
+async function load(){
+  try{
+    const res=await fetch(API+'/api/videos?hashtag='+encodeURIComponent(tag)+'&category='+encodeURIComponent(tag));
+    allVideos=await res.json();
+    document.getElementById('heroCount').textContent=allVideos.length+' videos';
+    renderGrid(allVideos);
+  }catch{
+    // fallback: load all and filter client-side
+    try{
+      const r=await fetch(API+'/api/videos');
+      allVideos=(await r.json()).filter(v=>(v.hashtags||[]).includes(tag)||(v.category||'').toLowerCase()===tag.toLowerCase()||(v.title||'').toLowerCase().includes(tag.toLowerCase()));
+      document.getElementById('heroCount').textContent=allVideos.length+' videos';
+      renderGrid(allVideos);
+    }catch{renderGrid([]);}
+  }
+}
+function renderGrid(vids){
+  const g=document.getElementById('videoGrid');
+  if(!vids.length){g.innerHTML='<div class="empty"><p>No videos found for #'+tag+'</p></div>';return;}
+  g.innerHTML=vids.map(v=>`<div class="vg-item" onclick="window.location.href='feed.html#${v._id}'">${v.videoType==='direct'&&v.videoUrl?`<video src="${v.videoUrl}" muted preload="none"></video>`:`<div class="vg-thumb">😂</div>`}<div class="vg-views">▶ ${v.views||0}</div></div>`).join('');
+}
+function showTab(tab,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  if(tab==='top')renderGrid([...allVideos].sort((a,b)=>(b.views||0)-(a.views||0)));
+  else renderGrid([...allVideos].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)));
+}
+load();
+</script>
+</body>
+</html>

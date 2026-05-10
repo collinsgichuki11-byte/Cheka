@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Welcome to Cheka!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;height:100%;overflow:hidden}
+    .ob-container{height:100dvh;position:relative;overflow:hidden}
+    .slide{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px env(safe-area-inset-bottom,40px);text-align:center;transition:transform .4s cubic-bezier(.4,0,.2,1),opacity .4s;opacity:0;transform:translateX(100%)}
+    .slide.active{opacity:1;transform:translateX(0)}
+    .slide.exit{opacity:0;transform:translateX(-100%)}
+    .slide-emoji{font-size:5rem;margin-bottom:24px;animation:bounce .6s ease infinite alternate}
+    @keyframes bounce{from{transform:scale(1)}to{transform:scale(1.1)}}
+    .slide h1{font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;margin-bottom:14px;line-height:1.2}
+    .slide p{font-size:15px;color:rgba(255,255,255,.7);line-height:1.7;max-width:320px}
+    /* SLIDE 1 */
+    .slide-1{background:linear-gradient(180deg,rgba(254,44,85,.12),rgba(0,0,0,1) 70%)}
+    /* SLIDE 2 */
+    .slide-2{background:linear-gradient(180deg,rgba(37,244,238,.08),rgba(0,0,0,1) 70%)}
+    /* SLIDE 3 */
+    .slide-3{background:linear-gradient(180deg,rgba(29,185,84,.08),rgba(0,0,0,1) 70%)}
+    /* INTERESTS */
+    .interests-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:20px 0}
+    .interest{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:8px 16px;font-size:13px;cursor:pointer;transition:all .2s;user-select:none}
+    .interest.selected{background:rgba(254,44,85,.2);border-color:#fe2c55;color:#fe2c55}
+    /* DOTS */
+    .dots{position:fixed;top:env(safe-area-inset-top,20px);left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:10}
+    .dot{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.3);transition:all .3s}
+    .dot.active{width:20px;background:#fff}
+    /* SKIP */
+    .skip-btn{position:fixed;top:env(safe-area-inset-top,16px);right:16px;background:none;border:none;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;z-index:10;padding:4px 8px}
+    /* NEXT / DONE */
+    .ob-btn{background:#fe2c55;border:none;border-radius:24px;padding:14px 40px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:28px;font-family:'Syne',sans-serif;transition:transform .15s,box-shadow .15s}
+    .ob-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(254,44,85,.4)}
+    .ob-btn-sec{background:none;border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:12px 32px;color:#fff;font-size:14px;cursor:pointer;margin-top:10px}
+  </style>
+</head>
+<body>
+<div class="ob-container">
+  <button class="skip-btn" onclick="done()">Skip</button>
+  <div class="dots">
+    <div class="dot active" id="dot0"></div>
+    <div class="dot" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+  </div>
+
+  <!-- SLIDE 0: Welcome -->
+  <div class="slide slide-1 active" id="slide0">
+    <div class="slide-emoji">😂</div>
+    <h1>Welcome to Cheka!</h1>
+    <p>Kenya's funniest short-form comedy platform. Watch, laugh, create, and get paid — all in one place.</p>
+    <button class="ob-btn" onclick="nextSlide()">Let's go →</button>
+  </div>
+
+  <!-- SLIDE 1: What you can do -->
+  <div class="slide slide-2" id="slide1">
+    <div class="slide-emoji">⚔️</div>
+    <h1>Compete & Win</h1>
+    <p>Every day a new comedy battle. Upload your entry, rally fans to vote, and win cash prizes + bragging rights.</p>
+    <button class="ob-btn" onclick="nextSlide()">Next →</button>
+  </div>
+
+  <!-- SLIDE 2: Pick interests -->
+  <div class="slide slide-2" id="slide2">
+    <div class="slide-emoji">🎭</div>
+    <h1>What makes you laugh?</h1>
+    <p>Pick your vibe — we'll fill your feed with content you actually enjoy.</p>
+    <div class="interests-grid">
+      <div class="interest" onclick="toggleInterest(this,'Comedy')">😂 Comedy</div>
+      <div class="interest" onclick="toggleInterest(this,'Skits')">🎭 Skits</div>
+      <div class="interest" onclick="toggleInterest(this,'Roasts')">🔥 Roasts</div>
+      <div class="interest" onclick="toggleInterest(this,'Standup')">🎤 Standup</div>
+      <div class="interest" onclick="toggleInterest(this,'Memes')">🤣 Memes</div>
+      <div class="interest" onclick="toggleInterest(this,'Nairobi')">🏙 Nairobi</div>
+      <div class="interest" onclick="toggleInterest(this,'Mombasa')">🌊 Mombasa</div>
+      <div class="interest" onclick="toggleInterest(this,'Kisumu')">⭐ Kisumu</div>
+      <div class="interest" onclick="toggleInterest(this,'Live')">🔴 Live</div>
+    </div>
+    <button class="ob-btn" onclick="saveInterests()">Continue →</button>
+  </div>
+
+  <!-- SLIDE 3: Creator or fan? -->
+  <div class="slide slide-3" id="slide3">
+    <div class="slide-emoji">🎬</div>
+    <h1>Are you a creator?</h1>
+    <p>Upload your first video and enter today's battle. Creators earn real money from views, gifts, and brand deals.</p>
+    <button class="ob-btn" onclick="uploadFirst()">Upload your first video</button>
+    <button class="ob-btn-sec" onclick="done()">I'm just here to watch</button>
+  </div>
+</div>
+
+<script>
+let currentSlide = 0;
+const interests = new Set();
+
+function nextSlide() {
+  const cur = document.getElementById('slide' + currentSlide);
+  cur.classList.add('exit');
+  cur.classList.remove('active');
+  currentSlide++;
+  const next = document.getElementById('slide' + currentSlide);
+  next.classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i === currentSlide));
+  setTimeout(() => cur.classList.remove('exit'), 400);
+}
+
+function toggleInterest(el, name) {
+  if (interests.has(name)) { interests.delete(name); el.classList.remove('selected'); }
+  else { interests.add(name); el.classList.add('selected'); }
+}
+
+function saveInterests() {
+  localStorage.setItem('cheka_interests', JSON.stringify([...interests]));
+  nextSlide();
+}
+
+function uploadFirst() {
+  localStorage.setItem('cheka_onboarded', '1');
+  window.location.href = 'upload.html';
+}
+
+function done() {
+  localStorage.setItem('cheka_onboarded', '1');
+  window.location.href = 'feed.html';
+}
+
+// Auto-skip if already onboarded
+if (localStorage.getItem('cheka_onboarded')) window.location.replace('feed.html');
+if (!localStorage.getItem('cheka_token')) window.location.replace('login.html');
+</script>
+</body>
+</html>

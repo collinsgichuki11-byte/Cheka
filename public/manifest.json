@@ -1,22 +1,28 @@
 {
-  "name": "Cheka",
+  "name": "Cheka — Kenya's Comedy Platform",
   "short_name": "Cheka",
-  "description": "Kenya's Home of Funny",
-  "start_url": "/feed.html",
+  "description": "Watch short-form comedy, compete in daily battles, go live. Kenya's #1 comedy platform.",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#e63212",
   "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#fe2c55",
+  "categories": ["entertainment", "social"],
+  "lang": "en-KE",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshot-feed.jpg", "sizes": "390x844", "type": "image/jpeg", "form_factor": "narrow", "label": "For You Feed" },
+    { "src": "screenshot-battles.jpg", "sizes": "390x844", "type": "image/jpeg", "form_factor": "narrow", "label": "Daily Battles" }
+  ],
+  "shortcuts": [
+    { "name": "Watch", "short_name": "Watch", "description": "Browse videos", "url": "/feed.html", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Upload", "short_name": "Upload", "description": "Post a video", "url": "/upload.html", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Battles", "short_name": "Battles", "description": "Daily battles", "url": "/battles.html", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

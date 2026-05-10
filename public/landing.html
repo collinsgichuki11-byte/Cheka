@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cheka — Kenya's #1 Comedy Platform</title>
+  <meta name="description" content="Cheka is Kenya's fastest-growing short-form comedy platform. Watch skits, compete in daily battles, go live, and connect with Africa's funniest creators."/>
+  <meta property="og:title" content="Cheka — Kenya's #1 Comedy Platform"/>
+  <meta property="og:description" content="Watch skits, compete in daily battles, go live — join Kenya's funniest platform."/>
+  <meta property="og:image" content="https://cheka-backend.onrender.com/og-image.jpg"/>
+  <meta property="og:url" content="https://cheka.app"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Cheka — Kenya's Comedy Platform"/>
+  <meta name="theme-color" content="#fe2c55"/>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{--red:#fe2c55;--cyan:#25f4ee;--bg:#000;--surface:#0a0a0a;--border:rgba(255,255,255,.08)}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:60px}
+    .nav-logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;text-decoration:none;color:#fff}
+    .nav-links{display:flex;align-items:center;gap:28px}
+    .nav-links a{color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:#fff}
+    .nav-cta{background:var(--red);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap}
+    /* HERO */
+    .hero{min-height:100vh;display:flex;align-items:center;padding:80px 5% 60px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(254,44,85,.15),transparent 70%);pointer-events:none}
+    .hero::after{content:'';position:absolute;bottom:-100px;left:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(37,244,238,.1),transparent 70%);pointer-events:none}
+    .hero-content{flex:1;max-width:560px;position:relative;z-index:1}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(254,44,85,.1);border:1px solid rgba(254,44,85,.3);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--red);margin-bottom:20px}
+    .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,6vw,4rem);font-weight:900;line-height:1.1;margin-bottom:20px}
+    .hero h1 .accent{background:linear-gradient(135deg,var(--red),#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:32px;max-width:460px}
+    .hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+    .btn-primary{background:var(--red);color:#fff;border:none;border-radius:24px;padding:13px 28px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s,box-shadow .15s}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(254,44,85,.4)}
+    .btn-secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:24px;padding:12px 26px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:border-color .2s}
+    .btn-secondary:hover{border-color:rgba(255,255,255,.5)}
+    .hero-stats{display:flex;gap:36px;flex-wrap:wrap}
+    .hero-stat h3{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:900;color:var(--red)}
+    .hero-stat p{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+    /* PHONE MOCKUP */
+    .hero-visual{flex:1;display:flex;justify-content:center;align-items:center;padding-left:40px;position:relative;z-index:1}
+    @media(max-width:768px){.hero{flex-direction:column;text-align:center}.hero-content{max-width:100%}.hero-visual{padding-left:0;margin-top:32px}.hero-btns{justify-content:center}.hero-stats{justify-content:center}.nav-links{display:none}}
+    .phone-wrap{position:relative}
+    .phone{width:220px;height:420px;background:#111;border-radius:36px;border:3px solid #222;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.05);position:relative}
+    .phone-notch{width:80px;height:20px;background:#000;border-radius:0 0 14px 14px;margin:0 auto;position:relative;z-index:2}
+    .phone-screen{background:linear-gradient(160deg,#1a1a2e,#16213e,#0f3460);height:calc(100% - 20px);display:flex;flex-direction:column;position:relative;overflow:hidden}
+    .phone-vid{flex:1;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative}
+    .phone-vid::after{content:'';position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to top,rgba(0,0,0,.8),transparent)}
+    .phone-right{position:absolute;right:8px;bottom:60px;display:flex;flex-direction:column;gap:14px;align-items:center}
+    .phone-act{display:flex;flex-direction:column;align-items:center;gap:2px}
+    .phone-act-icon{font-size:1.4rem}
+    .phone-act-count{font-size:9px;color:rgba(255,255,255,.8)}
+    .phone-disc{width:28px;height:28px;border-radius:50%;background:#333;border:2px solid #555;display:flex;align-items:center;justify-content:center;animation:spin 3s linear infinite}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    .phone-disc::before{content:'';width:8px;height:8px;border-radius:50%;background:#000}
+    .phone-info{position:absolute;bottom:50px;left:8px;right:44px}
+    .phone-user{font-size:11px;font-weight:700}
+    .phone-caption{font-size:9px;color:rgba(255,255,255,.7);margin-top:2px}
+    .phone-nav{height:44px;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:space-around;padding:0 8px}
+    .phone-nav-dot{width:5px;height:5px;border-radius:50%;background:#888}
+    .phone-nav-dot.active{background:#fff}
+    .phone-nav-plus{background:#fff;border-radius:4px;width:20px;height:13px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#000;position:relative}
+    .phone-nav-plus::before{content:'';position:absolute;left:-2px;top:0;bottom:0;width:3px;background:var(--cyan);border-radius:2px 0 0 2px}
+    .phone-nav-plus::after{content:'';position:absolute;right:-2px;top:0;bottom:0;width:3px;background:var(--red);border-radius:0 2px 2px 0}
+    .phone-glow{position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(254,44,85,.2),transparent 70%);z-index:-1}
+    .float-badge{position:absolute;background:rgba(0,0,0,.85);border:1px solid rgba(254,44,85,.4);border-radius:12px;padding:8px 12px;font-size:11px;backdrop-filter:blur(8px);animation:float 3s ease-in-out infinite}
+    .float-badge:nth-child(1){top:10%;left:-30px;animation-delay:0s}
+    .float-badge:nth-child(2){bottom:20%;right:-20px;animation-delay:1.5s}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    /* FEATURES */
+    .section{padding:80px 5%}
+    .section-center{text-align:center;margin-bottom:48px}
+    .section-badge{display:inline-block;background:rgba(37,244,238,.1);border:1px solid rgba(37,244,238,.2);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;color:var(--cyan);margin-bottom:12px}
+    .section-title{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin-bottom:12px}
+    .section-sub{font-size:15px;color:rgba(255,255,255,.6);max-width:480px;margin:0 auto;line-height:1.6}
+    .features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+    .feat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;transition:border-color .2s,transform .2s}
+    .feat-card:hover{border-color:rgba(254,44,85,.3);transform:translateY(-4px)}
+    .feat-icon{font-size:2.2rem;margin-bottom:14px;display:block}
+    .feat-card h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;margin-bottom:8px}
+    .feat-card p{font-size:14px;color:rgba(255,255,255,.6);line-height:1.6}
+    /* HOW IT WORKS */
+    .steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;position:relative}
+    .step{text-align:center;padding:24px}
+    .step-num{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--red),#ff6b35);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:900;margin:0 auto 16px}
+    .step h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:900;margin-bottom:8px}
+    .step p{font-size:13px;color:rgba(255,255,255,.6);line-height:1.6}
+    /* CREATORS SECTION */
+    .creators-section{background:linear-gradient(135deg,rgba(254,44,85,.06),rgba(37,244,238,.04));border-radius:20px;margin:0 5%;padding:60px 40px;display:flex;gap:40px;align-items:center;flex-wrap:wrap}
+    .creators-content{flex:1;min-width:280px}
+    .creators-content h2{font-family:'Syne',sans-serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:900;margin-bottom:12px}
+    .creators-content p{font-size:15px;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:24px}
+    .creator-perks{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+    .perk{display:flex;align-items:center;gap:10px;font-size:14px}
+    .perk-check{width:20px;height:20px;border-radius:50%;background:rgba(37,244,238,.2);border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:var(--cyan)}
+    .creators-visual{flex:1;min-width:200px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+    .creator-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:40px;padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:13px}
+    .creator-av{width:28px;height:28px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+    /* TESTIMONIALS */
+    .testimonials{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .testimonial{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
+    .testimonial-stars{color:#ffd700;font-size:14px;margin-bottom:10px}
+    .testimonial-text{font-size:14px;color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:16px;font-style:italic}
+    .testimonial-author{display:flex;align-items:center;gap:10px}
+    .testimonial-av{width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+    .testimonial-info h4{font-size:13px;font-weight:700}
+    .testimonial-info p{font-size:11px;color:#666}
+    /* PRICING / CREATOR PROGRAM */
+    .pricing-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+    .pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative}
+    .pricing-card.featured{border-color:var(--red);background:linear-gradient(135deg,rgba(254,44,85,.08),rgba(0,0,0,.5))}
+    .pricing-card.featured::before{content:'POPULAR';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:0 0 8px 8px;letter-spacing:1px}
+    .pricing-tier{font-size:12px;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:8px}
+    .pricing-price{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:900;margin-bottom:4px}
+    .pricing-price span{font-size:14px;color:#888;font-family:'Inter',sans-serif;font-weight:400}
+    .pricing-desc{font-size:13px;color:#888;margin-bottom:20px}
+    .pricing-features{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+    .pricing-feat{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.8)}
+    .pricing-feat::before{content:'✓';color:var(--cyan);font-weight:700;font-size:14px}
+    .pricing-btn{width:100%;padding:11px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+    .pricing-card.featured .pricing-btn{background:var(--red);color:#fff}
+    .pricing-card:not(.featured) .pricing-btn{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff}
+    /* DOWNLOAD */
+    .download-section{text-align:center;padding:80px 5%;background:linear-gradient(135deg,rgba(254,44,85,.04),rgba(37,244,238,.02))}
+    .download-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+    .dl-btn{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 22px;text-decoration:none;color:#fff;transition:border-color .2s,transform .2s}
+    .dl-btn:hover{border-color:rgba(254,44,85,.4);transform:translateY(-3px)}
+    .dl-btn-icon{font-size:1.8rem}
+    .dl-btn-text{text-align:left}
+    .dl-btn-text small{font-size:10px;color:#888;display:block}
+    .dl-btn-text strong{font-size:15px;font-weight:700}
+    /* FOOTER */
+    footer{border-top:1px solid var(--border);padding:40px 5%;display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+    .footer-brand{flex:1;min-width:200px}
+    .footer-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:8px}
+    .footer-brand p{font-size:13px;color:#666;line-height:1.6;max-width:280px}
+    .footer-links{display:flex;gap:48px;flex-wrap:wrap}
+    .footer-col h4{font-size:12px;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:12px;text-transform:uppercase}
+    .footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:8px;transition:color .2s}
+    .footer-col a:hover{color:#fff}
+    .footer-bottom{width:100%;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:gap:12px}
+    .footer-bottom p{font-size:12px;color:#555}
+    .social-links{display:flex;gap:12px}
+    .social-link{width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;text-decoration:none;transition:border-color .2s}
+    .social-link:hover{border-color:var(--red)}
+    /* SCROLL ANIMATIONS */
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    /* COOKIE BANNER */
+    .cookie-banner{position:fixed;bottom:16px;left:16px;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;z-index:1000;max-width:520px;display:none}
+    .cookie-banner.show{display:flex}
+    .cookie-banner p{font-size:12px;color:rgba(255,255,255,.7);flex:1;line-height:1.5}
+    .cookie-btn{background:var(--red);border:none;border-radius:8px;padding:7px 16px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+    /* MARQUEE */
+    .marquee-wrap{overflow:hidden;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:40px 0;background:rgba(254,44,85,.03)}
+    .marquee{display:flex;gap:32px;animation:marqueeAnim 20s linear infinite;white-space:nowrap}
+    .marquee-item{display:flex;align-items:center;gap:8px;font-size:14px;color:rgba(255,255,255,.7);flex-shrink:0}
+    @keyframes marqueeAnim{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">😂 Cheka</a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#creators">Creators</a>
+    <a href="#pricing">Program</a>
+    <a href="login.html">Log in</a>
+  </div>
+  <a href="signup.html" class="nav-cta">Join Free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Now Live in Kenya 🇰🇪</div>
+    <h1>The <span class="accent">comedy platform</span> built for Africa</h1>
+    <p>Watch short-form skits, compete in daily battles, go live with your fans, and get paid for making Kenya laugh. The stage is yours.</p>
+    <div class="hero-btns">
+      <a href="signup.html" class="btn-primary">🚀 Join Free</a>
+      <a href="feed.html" class="btn-secondary">Watch Now</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><h3>50K+</h3><p>Active Creators</p></div>
+      <div class="hero-stat"><h3>2M+</h3><p>Videos Watched</p></div>
+      <div class="hero-stat"><h3>#1</h3><p>Comedy Platform</p></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="phone-wrap">
+      <div class="phone-glow"></div>
+      <div class="float-badge">😂 +2.4K laughing</div>
+      <div class="float-badge">⚔️ Battle ends in 3h</div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-vid" id="phoneFeed">😂</div>
+          <div class="phone-right">
+            <div class="phone-act"><div class="phone-act-icon">❤️</div><div class="phone-act-count">24K</div></div>
+            <div class="phone-act"><div class="phone-act-icon">💬</div><div class="phone-act-count">891</div></div>
+            <div class="phone-act"><div class="phone-act-icon">↗️</div><div class="phone-act-count">Share</div></div>
+            <div class="phone-disc"></div>
+          </div>
+          <div class="phone-info">
+            <div class="phone-user">@NairobiVibes</div>
+            <div class="phone-caption">POV: Matatu conductor on Monday 😂</div>
+          </div>
+          <div class="phone-nav">
+            <div class="phone-nav-dot active"></div>
+            <div class="phone-nav-dot"></div>
+            <div class="phone-nav-plus">+</div>
+            <div class="phone-nav-dot"></div>
+            <div class="phone-nav-dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span class="marquee-item">😂 Daily Battles</span>
+    <span class="marquee-item">🔴 Go Live</span>
+    <span class="marquee-item">💬 Real-time DMs</span>
+    <span class="marquee-item">🏆 Leaderboards</span>
+    <span class="marquee-item">💰 Get Paid</span>
+    <span class="marquee-item">⚔️ Win Prizes</span>
+    <span class="marquee-item">🎤 Standup</span>
+    <span class="marquee-item">🎭 Skits</span>
+    <span class="marquee-item">🔥 Roasts</span>
+    <span class="marquee-item">🤣 Memes</span>
+    <span class="marquee-item">😂 Daily Battles</span>
+    <span class="marquee-item">🔴 Go Live</span>
+    <span class="marquee-item">💬 Real-time DMs</span>
+    <span class="marquee-item">🏆 Leaderboards</span>
+    <span class="marquee-item">💰 Get Paid</span>
+    <span class="marquee-item">⚔️ Win Prizes</span>
+    <span class="marquee-item">🎤 Standup</span>
+    <span class="marquee-item">🎭 Skits</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-center reveal">
+    <div class="section-badge">Everything you need</div>
+    <h2 class="section-title">Built for creators. Built for fans.</h2>
+    <p class="section-sub">Every feature designed to help Kenyan comedians grow their audience and get rewarded.</p>
+  </div>
+  <div class="features-grid reveal">
+    <div class="feat-card">
+      <span class="feat-icon">📱</span>
+      <h3>For You Feed</h3>
+      <p>Scroll-snap full-screen videos. A smart algorithm surfaces the funniest content tailored to you — no effort needed.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">⚔️</span>
+      <h3>Daily Battles</h3>
+      <p>Every day, a new comedy challenge. Enter your video, rally your fans to vote, and claim the top spot on the leaderboard.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🔴</span>
+      <h3>Go Live</h3>
+      <p>Stream live comedy shows, Q&As, and roast sessions to your followers in real time. Receive gifts and grow your fanbase.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">💬</span>
+      <h3>Real-time DMs</h3>
+      <p>Connect with fans and fellow creators through instant messages. Build genuine relationships behind the scenes.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">💰</span>
+      <h3>Get Paid</h3>
+      <p>Earn from your content through the Cheka Creator Program. Monetize views, gifts, battles prizes, and brand deals.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">📊</span>
+      <h3>Creator Studio</h3>
+      <p>Track your views, followers, earnings, and engagement in a clean dashboard built for serious creators.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🔍</span>
+      <h3>Discover</h3>
+      <p>Trending hashtags, creator leaderboards, and a powerful search — find the content and people that make you laugh.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🔔</span>
+      <h3>Smart Notifications</h3>
+      <p>Know when someone likes your content, sends you a gift, or joins a battle you're competing in.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="padding-top:0">
+  <div class="section-center reveal">
+    <div class="section-badge">Getting started</div>
+    <h2 class="section-title">Up and running in 3 steps</h2>
+  </div>
+  <div class="steps reveal">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Create your account</h3>
+      <p>Sign up free with your email and pick a username. No credit card needed — ever.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Upload your first video</h3>
+      <p>Post a skit, standup clip, or funny moment. Paste a YouTube link or upload directly from your phone.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Grow & get paid</h3>
+      <p>Join battles, go live, build your audience, and earn money from your comedy talent.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CREATOR PROGRAM -->
+<section class="section" id="creators">
+  <div class="creators-section reveal">
+    <div class="creators-content">
+      <div class="section-badge" style="margin-bottom:16px">Creator Program</div>
+      <h2>Turn your talent into income</h2>
+      <p>Cheka's Creator Program rewards the funniest voices in Kenya. Apply once — earn forever.</p>
+      <div class="creator-perks">
+        <div class="perk"><div class="perk-check">✓</div>Revenue share on your video views</div>
+        <div class="perk"><div class="perk-check">✓</div>Battle prize pool — winners take KES 10,000+</div>
+        <div class="perk"><div class="perk-check">✓</div>Brand deal marketplace (Kenya's top brands)</div>
+        <div class="perk"><div class="perk-check">✓</div>Fan gifts converted to real cash</div>
+        <div class="perk"><div class="perk-check">✓</div>Priority algorithm boost for monetized creators</div>
+      </div>
+      <a href="signup.html" class="btn-primary">Apply to Creator Program</a>
+    </div>
+    <div class="creators-visual">
+      <div class="creator-pill"><div class="creator-av">N</div>@NairobiVibes · KES 45,000</div>
+      <div class="creator-pill"><div class="creator-av">K</div>@KamuauComedy · KES 28,000</div>
+      <div class="creator-pill"><div class="creator-av">M</div>@MombasaJokes · KES 62,000</div>
+      <div class="creator-pill"><div class="creator-av">W</div>@WairimuSkits · KES 19,500</div>
+      <div class="creator-pill"><div class="creator-av">J</div>@JuaKaliKid · KES 33,000</div>
+      <div class="creator-pill"><div class="creator-av">A</div>@AbbaStandup · KES 51,000</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="section-center reveal">
+    <div class="section-badge">What creators say</div>
+    <h2 class="section-title">Trusted by Kenya's funniest people</h2>
+  </div>
+  <div class="testimonials reveal">
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <div class="testimonial-text">"Nimewahi pata KES 45,000 in one month just from my comedy skits. Cheka is the real deal — no cap."</div>
+      <div class="testimonial-author">
+        <div class="testimonial-av">N</div>
+        <div class="testimonial-info"><h4>@NairobiVibes</h4><p>50K followers · Nairobi</p></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <div class="testimonial-text">"The daily battles are addictive. I won three times this month and my following grew from 2K to 38K in 60 days."</div>
+      <div class="testimonial-author">
+        <div class="testimonial-av">M</div>
+        <div class="testimonial-info"><h4>@MombasaJokes</h4><p>38K followers · Mombasa</p></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <div class="testimonial-text">"Finally a platform made for us Africans. The team actually listens and the algorithm actually works for small creators."</div>
+      <div class="testimonial-author">
+        <div class="testimonial-av">W</div>
+        <div class="testimonial-info"><h4>@WairimuSkits</h4><p>22K followers · Kisumu</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREATOR TIERS / PRICING -->
+<section class="section" id="pricing">
+  <div class="section-center reveal">
+    <div class="section-badge">Creator Tiers</div>
+    <h2 class="section-title">Every creator earns — at every level</h2>
+    <p class="section-sub">Cheka is free forever. Tiers unlock higher earnings and features as you grow.</p>
+  </div>
+  <div class="pricing-cards reveal">
+    <div class="pricing-card">
+      <div class="pricing-tier">STARTER</div>
+      <div class="pricing-price">Free <span>forever</span></div>
+      <div class="pricing-desc">Perfect for getting started</div>
+      <div class="pricing-features">
+        <div class="pricing-feat">Upload unlimited videos</div>
+        <div class="pricing-feat">Join daily battles</div>
+        <div class="pricing-feat">Go live</div>
+        <div class="pricing-feat">Real-time DMs</div>
+        <div class="pricing-feat">Basic analytics</div>
+      </div>
+      <button class="pricing-btn" onclick="window.location.href='signup.html'">Get Started Free</button>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-tier">CREATOR+</div>
+      <div class="pricing-price">KES 500 <span>/month</span></div>
+      <div class="pricing-desc">For serious comedians ready to earn</div>
+      <div class="pricing-features">
+        <div class="pricing-feat">Everything in Starter</div>
+        <div class="pricing-feat">Revenue share (views)</div>
+        <div class="pricing-feat">Battle prize eligibility</div>
+        <div class="pricing-feat">Brand deal marketplace</div>
+        <div class="pricing-feat">Advanced analytics</div>
+        <div class="pricing-feat">Priority support</div>
+        <div class="pricing-feat">Algorithm boost</div>
+      </div>
+      <button class="pricing-btn" onclick="window.location.href='signup.html'">Join Creator+</button>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-tier">PRO</div>
+      <div class="pricing-price">KES 2,000 <span>/month</span></div>
+      <div class="pricing-desc">For established creators & agencies</div>
+      <div class="pricing-features">
+        <div class="pricing-feat">Everything in Creator+</div>
+        <div class="pricing-feat">Dedicated account manager</div>
+        <div class="pricing-feat">Custom brand deals</div>
+        <div class="pricing-feat">Multi-account management</div>
+        <div class="pricing-feat">Early access to new features</div>
+        <div class="pricing-feat">Verified badge</div>
+      </div>
+      <button class="pricing-btn" onclick="window.location.href='signup.html'">Go Pro</button>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD CTA -->
+<section class="download-section reveal">
+  <div class="section-badge" style="display:inline-block;margin-bottom:16px">Available everywhere</div>
+  <h2 class="section-title">Get Cheka on any device</h2>
+  <p style="color:rgba(255,255,255,.6);font-size:15px;margin-top:8px">Works in your browser — no download required. Install as an app from your browser for the best experience.</p>
+  <div class="download-btns">
+    <a href="feed.html" class="dl-btn">
+      <span class="dl-btn-icon">🌐</span>
+      <div class="dl-btn-text"><small>Open in</small><strong>Browser</strong></div>
+    </a>
+    <a href="signup.html" class="dl-btn" id="installBtn" style="display:none">
+      <span class="dl-btn-icon">📱</span>
+      <div class="dl-btn-text"><small>Install</small><strong>Cheka App</strong></div>
+    </a>
+    <a href="#" class="dl-btn" onclick="pwaShare()">
+      <span class="dl-btn-icon">📤</span>
+      <div class="dl-btn-text"><small>Share</small><strong>Invite Friends</strong></div>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="footer-logo">😂 Cheka</div>
+    <p>Kenya's #1 short-form comedy platform. Built for African creators, by African creators.</p>
+    <div class="social-links" style="margin-top:16px">
+      <a class="social-link" href="#" title="Twitter">𝕏</a>
+      <a class="social-link" href="#" title="Instagram">📸</a>
+      <a class="social-link" href="#" title="TikTok">🎵</a>
+      <a class="social-link" href="#" title="YouTube">▶</a>
+    </div>
+  </div>
+  <div class="footer-links">
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="feed.html">For You Feed</a>
+      <a href="battles.html">Daily Battles</a>
+      <a href="live.html">Go Live</a>
+      <a href="search.html">Discover</a>
+      <a href="studio.html">Creator Studio</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About Us</a>
+      <a href="#">Press Kit</a>
+      <a href="#">Careers</a>
+      <a href="#">Blog</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="#">Help Center</a>
+      <a href="#">Community Guidelines</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+    <div class="footer-col">
+      <h4>Creators</h4>
+      <a href="signup.html">Apply to Program</a>
+      <a href="studio.html">Creator Studio</a>
+      <a href="#">Brand Deals</a>
+      <a href="#">Creator Fund</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Cheka Technologies. Made with ❤️ in Nairobi, Kenya 🇰🇪</p>
+  </div>
+</footer>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner">
+  <p>We use cookies to make Cheka funnier for you. By continuing, you agree to our <a href="#" style="color:var(--red)">cookie policy</a>.</p>
+  <button class="cookie-btn" onclick="acceptCookies()">Got it</button>
+</div>
+
+<script>
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+reveals.forEach(el => obs.observe(el));
+
+// Phone animation (cycle emojis)
+const emojis = ['😂','🤣','😅','😎','🔥','🎭','🎤','😂'];
+let ei = 0;
+setInterval(() => { document.getElementById('phoneFeed').textContent = emojis[++ei % emojis.length]; }, 2000);
+
+// Cookie banner
+if (!localStorage.getItem('ck_accept')) setTimeout(() => document.getElementById('cookieBanner').classList.add('show'), 2000);
+function acceptCookies() { localStorage.setItem('ck_accept','1'); document.getElementById('cookieBanner').classList.remove('show'); }
+
+// PWA install
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('installBtn').style.display = 'flex';
+  document.getElementById('installBtn').onclick = async () => {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  };
+});
+
+// Share
+function pwaShare() {
+  if (navigator.share) navigator.share({ title: 'Cheka — Kenya\'s Comedy Platform', text: 'Watch Kenya\'s funniest comedy content!', url: window.location.href });
+  else navigator.clipboard.writeText(window.location.href).then(() => alert('Link copied!'));
+}
+
+// Redirect if logged in
+if (localStorage.getItem('cheka_token')) document.querySelector('.nav-cta').href = 'feed.html';
+
+// SW
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+</script>
+</body>
+</html>

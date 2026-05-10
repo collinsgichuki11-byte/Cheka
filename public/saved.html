@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Saved — Cheka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100%;padding-bottom:80px}
+    .top-bar{display:flex;align-items:center;gap:10px;padding:env(safe-area-inset-top,10px) 16px 10px;border-bottom:1px solid rgba(255,255,255,.08);background:#000;position:sticky;top:0;z-index:10}
+    .top-back{background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+    .top-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:900;flex:1}
+    .video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px}
+    .vg-item{position:relative;aspect-ratio:9/16;overflow:hidden;cursor:pointer;background:#111}
+    .vg-item video,.vg-thumb{width:100%;height:100%;object-fit:cover}
+    .vg-thumb{display:flex;align-items:center;justify-content:center;font-size:2rem;background:linear-gradient(135deg,#1a1a1a,#2a2a2a)}
+    .vg-likes{position:absolute;bottom:4px;left:4px;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+    .unsave-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center}
+    .empty{text-align:center;padding:60px 24px;color:#555}
+    .empty h3{font-family:'Syne',sans-serif;font-size:1rem;color:#888;margin-bottom:8px}
+    .empty a{background:#fe2c55;color:#fff;border-radius:8px;padding:10px 24px;text-decoration:none;font-size:13px;font-weight:700;display:inline-block;margin-top:12px}
+    .bot-nav{position:fixed;bottom:0;left:0;right:0;z-index:20;display:flex;justify-content:space-around;align-items:center;padding:8px 0 env(safe-area-inset-bottom,8px);background:rgba(0,0,0,.95);border-top:1px solid rgba(255,255,255,.08)}
+    .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:rgba(255,255,255,.55);font-size:10px;min-width:48px}
+    .nav-item.active{color:#fff}
+    .nav-item svg{width:26px;height:26px}
+    .nav-plus-wrap{display:flex;align-items:center}
+    .nav-plus{background:#fff;border-radius:8px;width:42px;height:28px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#000;position:relative}
+    .nav-plus::before{content:'';position:absolute;left:-5px;top:0;bottom:0;width:6px;border-radius:4px 0 0 4px;background:#25f4ee}
+    .nav-plus::after{content:'';position:absolute;right:-5px;top:0;bottom:0;width:6px;border-radius:0 4px 4px 0;background:#fe2c55}
+  </style>
+</head>
+<body>
+<div class="top-bar">
+  <button class="top-back" onclick="history.back()">‹</button>
+  <span class="top-title">🔖 Saved</span>
+</div>
+<div id="grid" class="video-grid"></div>
+<nav class="bot-nav">
+  <a href="feed.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a>
+  <a href="search.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span>Discover</span></a>
+  <a href="upload.html" class="nav-item"><div class="nav-plus-wrap"><div class="nav-plus">+</div></div></a>
+  <a href="messages.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>Inbox</span></a>
+  <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Me</span></a>
+</nav>
+<script>
+const API='https://cheka-backend.onrender.com';
+const token=localStorage.getItem('cheka_token');
+if(!token)window.location.href='login.html';
+const saved=new Set(JSON.parse(localStorage.getItem('cheka_saved')||'[]'));
+async function load(){
+  const grid=document.getElementById('grid');
+  if(!saved.size){grid.innerHTML='<div class="empty"><h3>Nothing saved yet</h3><p>Tap the bookmark icon on any video to save it here</p><a href="feed.html">Browse videos</a></div>';return;}
+  try{
+    const res=await fetch(API+'/api/videos',{headers:{Authorization:'Bearer '+token}});
+    const all=await res.json();
+    const mine=all.filter(v=>saved.has(v._id));
+    if(!mine.length){grid.innerHTML='<div class="empty"><h3>Saved videos not found</h3><a href="feed.html">Browse videos</a></div>';return;}
+    grid.innerHTML=mine.map(v=>`
+      <div class="vg-item" onclick="window.location.href='feed.html#${v._id}'">
+        ${v.videoType==='direct'&&v.videoUrl?`<video src="${v.videoUrl}" muted preload="none"></video>`:`<div class="vg-thumb">😂</div>`}
+        <div class="vg-likes">❤️ ${v.likes||0}</div>
+        <button class="unsave-btn" onclick="event.stopPropagation();unsave('${v._id}',this.parentElement)">🗑</button>
+      </div>`).join('');
+  }catch{grid.innerHTML='<div class="empty"><h3>Could not load</h3><a href="feed.html">Go back</a></div>';}
+}
+function unsave(id,el){saved.delete(id);localStorage.setItem('cheka_saved',JSON.stringify([...saved]));el.remove();if(!saved.size)load();}
+load();
+</script>
+</body>
+</html>
